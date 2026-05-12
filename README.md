@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LUNATECH — Premium Electronics E-Commerce
 
-## Getting Started
+A modern e-commerce app built with Next.js 14, TypeScript, and Tailwind CSS. Features product filtering, shopping cart, multi-step checkout, authentication, and dark mode.
 
-First, run the development server:
+## Features
+
+- Advanced product filtering & search with URL state sync
+- Product details with image gallery & variant selectors
+- Persistent shopping cart with real-time calculations
+- Multi-step checkout with form validation (React Hook Form + Zod)
+- User authentication (NextAuth.js)
+- Wishlist with localStorage
+- Dark mode support
+- Mobile responsive
+- Lighthouse score 90+
+
+## Tech Stack
+
+- **Next.js 14** (App Router)
+- **TypeScript**
+- **Tailwind CSS** + shadcn/ui
+- **Zustand** (state management)
+- **React Hook Form** + **Zod** (form validation)
+- **NextAuth.js** (authentication)
+- **React Query** (data fetching)
+
+## Quick Start
 
 ```bash
+git clone https://github.com/yourusername/lumen-ecommerce.git
+cd lumen-ecommerce
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+├── app/          # Next.js App Router
+├── components/   # React components
+├── lib/          # Utilities & helpers
+├── store/        # Zustand state
+├── hooks/        # Custom hooks
+└── types/        # TypeScript types
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Development
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run dev       # Start dev server
+npm run build     # Build for production
+npm run lint      # Run ESLint
+```
