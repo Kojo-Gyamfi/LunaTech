@@ -38,7 +38,7 @@ body {
 
 /* Typography system */
 h1, h2, h3, h4, h5, h6 {
-  @apply font-display font-semibold tracking-tight;
+  @apply font-sans font-semibold tracking-tight;
 }
 
 h1 {
@@ -62,16 +62,16 @@ p {
 }
 
 a {
-  @apply text-amber-400 hover:text-amber-300 transition-colors duration-fast;
+  @apply text-amber-400 hover:text-amber-300 transition-colors duration-200;
 }
 
 /* Smooth interactions */
 * {
-  @apply transition-colors duration-fast;
+  @apply transition-colors duration-200;
 }
 
 button, [role="button"] {
-  @apply transition-all duration-fast cursor-pointer;
+  @apply transition-all duration-200 cursor-pointer;
   
   &:active {
     @apply scale-95;
@@ -110,4 +110,29 @@ button, [role="button"] {
 /* Focus states for accessibility */
 :focus-visible {
   @apply outline-amber-400 outline-2 outline-offset-2;
+}
+
+/* Custom utility classes */
+.glass {
+  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-lg;
+}
+
+.glass-sm {
+  @apply bg-white/3 backdrop-blur-sm border border-white/5 rounded-md;
+}
+
+.glass-lg {
+  @apply bg-white/8 backdrop-blur-lg border border-white/20 rounded-2xl;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-300 to-amber-400;
+}
+
+.btn-luxury {
+  @apply px-6 py-3 bg-amber-400 text-slate-950 font-semibold rounded-lg hover:bg-amber-300 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-luxury-outline {
+  @apply px-6 py-3 border border-amber-400 text-amber-400 font-semibold rounded-lg hover:bg-amber-400/10 transition-all duration-200;
 }

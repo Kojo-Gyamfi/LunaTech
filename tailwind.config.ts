@@ -84,9 +84,15 @@ const config: Config = {
         gutter: '1.5rem',
       },
       transitionDuration: {
-        fast: '150ms',
-        base: '200ms',
-        slow: '300ms',
+        DEFAULT: '200ms',
+        75: '75ms',
+        100: '100ms',
+        150: '150ms',
+        200: '200ms',
+        300: '300ms',
+        500: '500ms',
+        700: '700ms',
+        1000: '1000ms',
       },
       borderRadius: {
         xs: '0.25rem',
@@ -99,31 +105,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [
-    // Custom glassmorphism plugin
-    function ({ addComponents, theme }) {
-      addComponents({
-        '.glass': {
-          '@apply bg-white/5 backdrop-blur-md border border-white/10 rounded-lg': {},
-        },
-        '.glass-sm': {
-          '@apply bg-white/3 backdrop-blur-sm border border-white/5 rounded-md': {},
-        },
-        '.glass-lg': {
-          '@apply bg-white/8 backdrop-blur-lg border border-white/20 rounded-2xl': {},
-        },
-        '.text-gradient': {
-          '@apply bg-clip-text text-transparent bg-gradient-to-r from-amber-300 to-amber-400': {},
-        },
-        '.btn-luxury': {
-          '@apply px-6 py-3 bg-amber-400 text-slate-950 font-semibold rounded-lg hover:bg-amber-300 transition-all duration-fast active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed': {},
-        },
-        '.btn-luxury-outline': {
-          '@apply px-6 py-3 border border-amber-400 text-amber-400 font-semibold rounded-lg hover:bg-amber-400/10 transition-all duration-fast': {},
-        },
-      });
-    },
-  ],
+  plugins: [],
 };
 
 export default config;
