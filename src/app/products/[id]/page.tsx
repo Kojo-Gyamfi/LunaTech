@@ -1,12 +1,20 @@
-'use client';
+"use client";
 
-import { use, useState, useMemo } from 'react';
-import Link from 'next/link';
-import { mockProducts } from '@/lib/mockData';
-import { useCartStore } from '@/lib/store';
-import ProductCard from '@/components/product/ProductCard';
-import ProductImage from '@/components/product/ProductImage';
-import { ChevronLeft, ShoppingCart, Sparkles, Check, X, Minus, Plus } from 'lucide-react';
+import { use, useState, useMemo } from "react";
+import Link from "next/link";
+import { mockProducts } from "@/lib/mockData";
+import { useCartStore } from "@/lib/store";
+import ProductCard from "@/components/product/ProductCard";
+import ProductImage from "@/components/product/ProductImage";
+import {
+  ChevronLeft,
+  ShoppingCart,
+  Sparkles,
+  Check,
+  X,
+  Minus,
+  Plus,
+} from "lucide-react";
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
@@ -31,11 +39,7 @@ export default function ProductDetailPage({
   const relatedProducts = useMemo(() => {
     if (!product) return [];
     return mockProducts
-      .filter(
-        (p) =>
-          p.category === product.category &&
-          p.id !== product.id
-      )
+      .filter((p) => p.category === product.category && p.id !== product.id)
       .slice(0, 4);
   }, [product]);
 
@@ -93,7 +97,7 @@ export default function ProductDetailPage({
               {product.isLimited && (
                 <div className="absolute top-4 right-4 bg-amber-400/90 backdrop-blur-sm text-slate-950 px-4 py-2 rounded-lg flex items-center space-x-2">
                   <Sparkles size={18} />
-                  <span className="font-semibold">Limited Edition</span>
+                  <span className="text-sm font-semibold">Limited Edition</span>
                 </div>
               )}
             </div>
@@ -107,8 +111,8 @@ export default function ProductDetailPage({
                     onClick={() => setSelectedImageIndex(index)}
                     className={`aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                       selectedImageIndex === index
-                        ? 'border-amber-400'
-                        : 'border-white/10 hover:border-white/20'
+                        ? "border-amber-400"
+                        : "border-white/10 hover:border-white/20"
                     }`}
                   >
                     <ProductImage
@@ -217,8 +221,8 @@ export default function ProductDetailPage({
                 disabled={product.stock === 0}
                 className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all duration-200 active:scale-95 ${
                   isAdded
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-amber-400 text-slate-950 hover:bg-amber-300 disabled:opacity-50 disabled:cursor-not-allowed'
+                    ? "bg-emerald-500 text-white"
+                    : "bg-amber-400 text-slate-950 hover:bg-amber-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 }`}
               >
                 {isAdded ? (

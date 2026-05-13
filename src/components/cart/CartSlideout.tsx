@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useCartStore } from '@/lib/store';
-import { X, Plus, Minus, Trash2 } from 'lucide-react';
-import ProductImage from '@/components/product/ProductImage';
+import Link from "next/link";
+import { useCartStore } from "@/lib/store";
+import { X, Plus, Minus, Trash2 } from "lucide-react";
+import ProductImage from "@/components/product/ProductImage";
 
 interface CartSlideoutProps {
   isOpen: boolean;
@@ -32,12 +32,14 @@ export default function CartSlideout({ isOpen, onClose }: CartSlideoutProps) {
       {/* Slideout Panel */}
       <div
         className={`fixed right-0 top-0 h-full w-full sm:w-96 bg-slate-900 border-l border-white/10 z-50 transform transition-transform duration-300 overflow-y-auto ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+          isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-slate-900/95 backdrop-blur-sm border-b border-white/10 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-100">Shopping Cart</h2>
+        <div className="sticky top-0 z-10 bg-slate-900/95 backdrop-blur-sm border-b border-white/10 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-slate-100">
+            Shopping Cart
+          </h2>
           <button
             onClick={onClose}
             className="p-1 text-slate-400 hover:text-slate-300 transition-colors duration-200"
@@ -62,7 +64,7 @@ export default function CartSlideout({ isOpen, onClose }: CartSlideoutProps) {
             <>
               {items.map((item) => (
                 <div key={item.product.id} className="py-4 space-y-3">
-                  <div className="flex gap-4">
+                  <div className="flex gap-4 items-start">
                     {/* Product Image */}
                     <div className="flex-shrink-0 w-20 h-20 bg-slate-800 rounded-lg overflow-hidden">
                       <ProductImage
@@ -73,11 +75,11 @@ export default function CartSlideout({ isOpen, onClose }: CartSlideoutProps) {
                     </div>
 
                     {/* Product Info */}
-                    <div className="flex-1">
-                      <h3 className="text-sm font-semibold text-slate-100 line-clamp-2">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-semibold text-slate-100 line-clamp-2 break-words">
                         {item.product.name}
                       </h3>
-                      <p className="text-xs text-slate-500 mb-1">
+                      <p className="text-xs text-slate-500 mb-1 truncate">
                         {item.product.category}
                       </p>
                       <p className="text-sm font-semibold text-amber-300">
@@ -125,7 +127,7 @@ export default function CartSlideout({ isOpen, onClose }: CartSlideoutProps) {
 
         {/* Footer with Totals and Checkout */}
         {items.length > 0 && (
-          <div className="sticky bottom-0 bg-slate-900/95 backdrop-blur-sm border-t border-white/10 p-6 space-y-4">
+          <div className="sticky bottom-0 z-10 bg-slate-900/95 backdrop-blur-sm border-t border-white/10 p-6 space-y-4">
             {/* Totals */}
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-slate-400">
@@ -142,7 +144,9 @@ export default function CartSlideout({ isOpen, onClose }: CartSlideoutProps) {
               </div>
               <div className="border-t border-white/10 pt-2 flex justify-between font-semibold text-slate-100">
                 <span>Total</span>
-                <span className="text-amber-300">${total.toLocaleString()}</span>
+                <span className="text-amber-300">
+                  ${total.toLocaleString()}
+                </span>
               </div>
             </div>
 
@@ -158,7 +162,7 @@ export default function CartSlideout({ isOpen, onClose }: CartSlideoutProps) {
             {/* Continue Shopping */}
             <button
               onClick={onClose}
-              className="w-full py-3 border border-white/10 text-slate-300 font-semibold rounded-lg hover:bg-slate-800/50 transition-all duration-200"
+              className="w-full py-3 border border-white/10 text-slate-300 font-semibold rounded-lg hover:bg-slate-800/50 transition-all duration-200 text-sm"
             >
               Continue Shopping
             </button>

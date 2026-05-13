@@ -1,25 +1,30 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import type { FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import { useCartStore } from '@/lib/store';
-import CartSlideout from '@/components/cart/CartSlideout';
-import { ShoppingCart, Search, User, Menu, X } from 'lucide-react';
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import type { FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useCartStore } from "@/lib/store";
+import CartSlideout from "@/components/cart/CartSlideout";
+import { ShoppingCart, Search, User, Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [isSearchActive, setIsSearchActive] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   const router = useRouter();
   const itemCount = useCartStore((state) => state.getItemCount());
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const query = searchValue.trim();
-    router.push(query ? `/?q=${encodeURIComponent(query)}` : '/');
+    router.push(query ? `/?q=${encodeURIComponent(query)}` : "/");
     setIsSearchActive(false);
     setIsMobileMenuOpen(false);
   };
@@ -33,7 +38,9 @@ export default function Navbar() {
             <Link href="/" className="flex-shrink-0 group">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-300 to-amber-400 rounded-lg flex items-center justify-center group-hover:shadow-lg transition-shadow duration-200">
-                  <span className="text-slate-950 font-bold text-sm sm:text-base">Λ</span>
+                  <span className="text-slate-950 font-bold text-sm sm:text-base">
+                    Λ
+                  </span>
                 </div>
                 <span className="text-base sm:text-lg font-display font-bold text-amber-300 hidden sm:inline">
                   LunaTech
@@ -76,7 +83,9 @@ export default function Navbar() {
                       placeholder="Search products..."
                       className="bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400/50 w-32 lg:w-48 transition-all duration-200"
                       onChange={(event) => setSearchValue(event.target.value)}
-                      onBlur={() => !searchValue.trim() && setIsSearchActive(false)}
+                      onBlur={() =>
+                        !searchValue.trim() && setIsSearchActive(false)
+                      }
                     />
                   </form>
                 ) : (
@@ -104,9 +113,9 @@ export default function Navbar() {
                 className="relative p-2 text-slate-400 hover:text-amber-300 transition-colors duration-200"
               >
                 <ShoppingCart size={20} />
-                {itemCount > 0 && (
+                {isHydrated && itemCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-amber-400 text-slate-950 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                    {itemCount > 9 ? '9+' : itemCount}
+                    {itemCount > 9 ? "9+" : itemCount}
                   </span>
                 )}
               </button>

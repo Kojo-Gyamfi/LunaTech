@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useCartStore } from '@/lib/store';
-import { CustomerInfo, ShippingAddress, PaymentInfo } from '@/types';
-import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useCartStore } from "@/lib/store";
+import { CustomerInfo, ShippingAddress, PaymentInfo } from "@/types";
+import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -29,51 +29,51 @@ export default function CheckoutPage() {
 
   // Form states
   const [customerInfo, setLocalCustomerInfo] = useState<CustomerInfo>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
   });
 
   const [shippingAddress, setLocalShippingAddress] = useState<ShippingAddress>({
-    street: '',
-    city: '',
-    state: '',
-    zip: '',
-    country: 'United States',
+    street: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "United States",
   });
 
   const [paymentInfo, setLocalPaymentInfo] = useState<PaymentInfo>({
-    cardNumber: '',
-    cardName: '',
-    expiryDate: '',
-    cvv: '',
+    cardNumber: "",
+    cardName: "",
+    expiryDate: "",
+    cvv: "",
   });
 
   // Validation functions
   const validateStep1 = () => {
     return (
-      customerInfo.firstName.trim() !== '' &&
-      customerInfo.lastName.trim() !== '' &&
-      customerInfo.email.trim() !== '' &&
-      customerInfo.phone.trim() !== ''
+      customerInfo.firstName.trim() !== "" &&
+      customerInfo.lastName.trim() !== "" &&
+      customerInfo.email.trim() !== "" &&
+      customerInfo.phone.trim() !== ""
     );
   };
 
   const validateStep2 = () => {
     return (
-      shippingAddress.street.trim() !== '' &&
-      shippingAddress.city.trim() !== '' &&
-      shippingAddress.state.trim() !== '' &&
-      shippingAddress.zip.trim() !== ''
+      shippingAddress.street.trim() !== "" &&
+      shippingAddress.city.trim() !== "" &&
+      shippingAddress.state.trim() !== "" &&
+      shippingAddress.zip.trim() !== ""
     );
   };
 
   const validateStep3 = () => {
     return (
-      paymentInfo.cardNumber.replace(/\s/g, '').length === 16 &&
-      paymentInfo.cardName.trim() !== '' &&
-      paymentInfo.expiryDate.trim() !== '' &&
+      paymentInfo.cardNumber.replace(/\s/g, "").length === 16 &&
+      paymentInfo.cardName.trim() !== "" &&
+      paymentInfo.expiryDate.trim() !== "" &&
       paymentInfo.cvv.length === 3
     );
   };
@@ -81,15 +81,15 @@ export default function CheckoutPage() {
   // Step navigation
   const handleNext = () => {
     if (currentStep === 1 && !validateStep1()) {
-      alert('Please fill in all customer information fields');
+      alert("Please fill in all customer information fields");
       return;
     }
     if (currentStep === 2 && !validateStep2()) {
-      alert('Please fill in all shipping address fields');
+      alert("Please fill in all shipping address fields");
       return;
     }
     if (currentStep === 3 && !validateStep3()) {
-      alert('Please fill in all payment information fields correctly');
+      alert("Please fill in all payment information fields correctly");
       return;
     }
 
@@ -111,9 +111,9 @@ export default function CheckoutPage() {
   const handleSubmitOrder = async () => {
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items,
           customerInfo,
@@ -134,8 +134,8 @@ export default function CheckoutPage() {
         router.push(`/order-confirmation?orderId=${result.id}`);
       }
     } catch (error) {
-      console.error('Error submitting order:', error);
-      alert('Failed to submit order. Please try again.');
+      console.error("Error submitting order:", error);
+      alert("Failed to submit order. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -175,21 +175,21 @@ export default function CheckoutPage() {
                 {[1, 2, 3, 4].map((step) => (
                   <div key={step} className="flex flex-col items-center">
                     <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold transition-all duration-200 ${
+                      className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-200 ${
                         step < currentStep
-                          ? 'bg-emerald-500 text-white'
+                          ? "bg-emerald-500 text-white"
                           : step === currentStep
-                          ? 'bg-amber-400 text-slate-950'
-                          : 'bg-slate-800 text-slate-500'
+                            ? "bg-amber-400 text-slate-950"
+                            : "bg-slate-800 text-slate-500"
                       }`}
                     >
                       {step < currentStep ? <Check size={20} /> : step}
                     </div>
                     <p className="text-xs text-slate-400 mt-2 text-center">
-                      {step === 1 && 'Information'}
-                      {step === 2 && 'Shipping'}
-                      {step === 3 && 'Payment'}
-                      {step === 4 && 'Review'}
+                      {step === 1 && "Information"}
+                      {step === 2 && "Shipping"}
+                      {step === 3 && "Payment"}
+                      {step === 4 && "Review"}
                     </p>
                   </div>
                 ))}
@@ -201,7 +201,7 @@ export default function CheckoutPage() {
                   <div
                     key={i}
                     className={`flex-1 h-1 rounded-full transition-all duration-200 ${
-                      i < currentStep ? 'bg-emerald-500' : 'bg-slate-800'
+                      i < currentStep ? "bg-emerald-500" : "bg-slate-800"
                     }`}
                   />
                 ))}
@@ -379,12 +379,44 @@ export default function CheckoutPage() {
                       <label className="block text-sm font-semibold text-slate-300 mb-2">
                         Country
                       </label>
-                      <input
-                        type="text"
-                        disabled
+                      <select
                         value={shippingAddress.country}
-                        className="w-full px-4 py-2 bg-slate-900/50 border border-white/10 rounded-lg text-slate-500 cursor-not-allowed"
-                      />
+                        onChange={(e) =>
+                          setLocalShippingAddress({
+                            ...shippingAddress,
+                            country: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-2 bg-slate-900/50 border border-white/10 rounded-lg text-slate-100 focus:outline-none focus:border-amber-400/50 transition-colors duration-200"
+                      >
+                        <option value="United States">United States</option>
+                        <option value="Canada">Canada</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Germany">Germany</option>
+                        <option value="France">France</option>
+                        <option value="Japan">Japan</option>
+                        <option value="Mexico">Mexico</option>
+                        <option value="Brazil">Brazil</option>
+                        <option value="India">India</option>
+                        <option value="China">China</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="New Zealand">New Zealand</option>
+                        <option value="South Korea">South Korea</option>
+                        <option value="Ghana">Ghana</option>
+                        <option value="Nigeria">Nigeria</option>
+                        <option value="Senegal">Senegal</option>
+                        <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+                        <option value="Kenya">Kenya</option>
+                        <option value="Egypt">Egypt</option>
+                        <option value="South Africa">South Africa</option>
+                        <option value="Spain">Spain</option>
+                        <option value="Italy">Italy</option>
+                        <option value="Netherlands">Netherlands</option>
+                        <option value="Sweden">Sweden</option>
+                        <option value="Switzerland">Switzerland</option>
+                        <option value="Other">Other</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -423,9 +455,9 @@ export default function CheckoutPage() {
                       type="text"
                       value={paymentInfo.cardNumber}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '');
+                        const value = e.target.value.replace(/\D/g, "");
                         const formatted = value
-                          .replace(/(\d{4})/g, '$1 ')
+                          .replace(/(\d{4})/g, "$1 ")
                           .trim();
                         setLocalPaymentInfo({
                           ...paymentInfo,
@@ -447,10 +479,11 @@ export default function CheckoutPage() {
                         type="text"
                         value={paymentInfo.expiryDate}
                         onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '');
+                          const value = e.target.value.replace(/\D/g, "");
                           let formatted = value;
                           if (value.length >= 2) {
-                            formatted = value.slice(0, 2) + '/' + value.slice(2, 4);
+                            formatted =
+                              value.slice(0, 2) + "/" + value.slice(2, 4);
                           }
                           setLocalPaymentInfo({
                             ...paymentInfo,
@@ -471,7 +504,7 @@ export default function CheckoutPage() {
                         type="text"
                         value={paymentInfo.cvv}
                         onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '');
+                          const value = e.target.value.replace(/\D/g, "");
                           setLocalPaymentInfo({
                             ...paymentInfo,
                             cvv: value.slice(0, 3),
@@ -521,7 +554,7 @@ export default function CheckoutPage() {
                         {shippingAddress.street}
                       </p>
                       <p className="text-sm text-slate-400">
-                        {shippingAddress.city}, {shippingAddress.state}{' '}
+                        {shippingAddress.city}, {shippingAddress.state}{" "}
                         {shippingAddress.zip}
                       </p>
                       <p className="text-sm text-slate-400">
@@ -543,7 +576,10 @@ export default function CheckoutPage() {
                               {item.product.name} x {item.quantity}
                             </span>
                             <span>
-                              ${(item.product.price * item.quantity).toLocaleString()}
+                              $
+                              {(
+                                item.product.price * item.quantity
+                              ).toLocaleString()}
                             </span>
                           </div>
                         ))}
@@ -579,7 +615,9 @@ export default function CheckoutPage() {
                     className="flex-1 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
                   >
                     <Check size={18} />
-                    <span>{isSubmitting ? 'Placing Order...' : 'Place Order'}</span>
+                    <span>
+                      {isSubmitting ? "Placing Order..." : "Place Order"}
+                    </span>
                   </button>
                 )}
               </div>
