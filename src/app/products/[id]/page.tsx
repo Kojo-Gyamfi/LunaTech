@@ -2,6 +2,7 @@
 
 import { use, useState, useMemo } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { mockProducts } from "@/lib/mockData";
 import { useCartStore } from "@/lib/store";
 import ProductCard from "@/components/product/ProductCard";
@@ -60,8 +61,14 @@ export default function ProductDetailPage({
   }
 
   const handleAddToCart = () => {
+    if (product.stock === 0) {
+      toast.error("This product is out of stock.");
+      return;
+    }
+
     addItem(product, quantity);
     setIsAdded(true);
+    toast.success(`${quantity} ${product.name} added to cart.`);
     setTimeout(() => setIsAdded(false), 2000);
   };
 
@@ -86,12 +93,14 @@ export default function ProductDetailPage({
           {/* Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative w-full aspect-square bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl overflow-hidden glass">
+            <div className="group relative w-full aspect-square overflow-hidden rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 glass transition-[transform,box-shadow,border-color] duration-500 ease-out hover:-translate-y-1 hover:border-amber-300/30 hover:shadow-amber-950/30">
               <ProductImage
                 src={product.images[selectedImageIndex]}
                 alt={product.name}
                 category={product.category}
+                className="transition-transform duration-700 ease-out group-hover:scale-105"
               />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-white/[0.03] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
               {/* Limited Badge */}
               {product.isLimited && (
@@ -109,7 +118,7 @@ export default function ProductDetailPage({
                   <button
                     key={index}
                     onClick={() => setSelectedImageIndex(index)}
-                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                    className={`aspect-square overflow-hidden rounded-lg border-2 transition-[transform,border-color,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-lg hover:shadow-black/25 ${
                       selectedImageIndex === index
                         ? "border-amber-400"
                         : "border-white/10 hover:border-white/20"
@@ -219,7 +228,7 @@ export default function ProductDetailPage({
               <button
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
-                className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all duration-200 active:scale-95 ${
+                className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all duration-300 active:scale-95 ${
                   isAdded
                     ? "bg-emerald-500 text-white"
                     : "bg-amber-400 text-slate-950 hover:bg-amber-300 disabled:opacity-50 disabled:cursor-not-allowed"

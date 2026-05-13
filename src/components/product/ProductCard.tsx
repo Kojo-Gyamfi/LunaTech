@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Product } from '@/types';
 import { useCartStore } from '@/lib/store';
 import { ShoppingCart, Sparkles } from 'lucide-react';
@@ -13,27 +14,27 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false);
-  const [showNotification, setShowNotification] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
 
   const handleAddToCart = () => {
+    if (product.stock === 0) {
+      toast.error("This product is out of stock.");
+      return;
+    }
+
     setIsAdding(true);
     addItem(product, 1);
-    setShowNotification(true);
+    toast.success(`${product.name} added to cart.`);
 
     setTimeout(() => {
       setIsAdding(false);
     }, 300);
-
-    setTimeout(() => {
-      setShowNotification(false);
-    }, 2000);
   };
 
   return (
-    <div className="group">
+    <div className="product-hover-group group h-full">
       {/* Card Container */}
-      <div className="glass overflow-hidden rounded-lg h-full flex flex-col shadow-2xl shadow-black/25 transition-all duration-300 hover:-translate-y-1 hover:border-amber-300/30 hover:bg-white/[0.07]">
+      <div className="product-hover-card glass h-full overflow-hidden rounded-lg flex flex-col shadow-2xl shadow-black/25">
         {/* Image Container */}
         <Link href={`/products/${product.id}`}>
           <div className="relative w-full aspect-square bg-gradient-to-br from-slate-900 to-black overflow-hidden cursor-pointer">
@@ -50,11 +51,16 @@ export default function ProductCard({ product }: ProductCardProps) {
               src={product.image}
               alt={product.name}
               category={product.category}
-              className="group-hover:scale-105 transition-transform duration-500"
+              className="product-hover-image"
             />
 
             {/* Overlay on Hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="product-hover-overlay absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
+            <div className="product-hover-cta absolute inset-x-4 bottom-4">
+              <span className="inline-flex rounded-full border border-amber-300/30 bg-slate-950/70 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-amber-200 backdrop-blur">
+                View details
+              </span>
+            </div>
           </div>
         </Link>
 
@@ -104,13 +110,6 @@ export default function ProductCard({ product }: ProductCardProps) {
               <ShoppingCart size={15} />
               <span>{isAdding ? 'Adding...' : 'Add to Cart'}</span>
             </button>
-
-            {/* Notification */}
-            {showNotification && (
-              <div className="text-[0.7rem] text-emerald-400 font-semibold text-center animate-pulse">
-                Added to cart
-              </div>
-            )}
           </div>
         </div>
       </div>

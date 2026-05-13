@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { toast } from "sonner";
 import { useCartStore } from "@/lib/store";
 import { X, Plus, Minus, Trash2 } from "lucide-react";
 import ProductImage from "@/components/product/ProductImage";
@@ -18,6 +19,11 @@ export default function CartSlideout({ isOpen, onClose }: CartSlideoutProps) {
   const shipping = useCartStore((state) => state.getShipping());
   const tax = useCartStore((state) => state.getTax());
   const total = useCartStore((state) => state.getCartTotal());
+
+  const handleRemoveItem = (productId: string, productName: string) => {
+    removeItem(productId);
+    toast.success(`${productName} removed from cart.`);
+  };
 
   return (
     <>
@@ -89,7 +95,9 @@ export default function CartSlideout({ isOpen, onClose }: CartSlideoutProps) {
 
                     {/* Remove Button */}
                     <button
-                      onClick={() => removeItem(item.product.id)}
+                      onClick={() =>
+                        handleRemoveItem(item.product.id, item.product.name)
+                      }
                       className="flex-shrink-0 p-1 text-slate-400 hover:text-red-400 transition-colors duration-200"
                     >
                       <Trash2 size={18} />

@@ -109,6 +109,12 @@ export default function AccountPage() {
                   <span>Total</span>
                   <span className="text-amber-300">${lastOrder.total.toLocaleString()}</span>
                 </div>
+                <Link
+                  href={`/orders/${lastOrder.id}`}
+                  className="inline-flex rounded-lg bg-amber-400 px-5 py-2 text-sm font-semibold text-slate-950 transition-all duration-200 hover:bg-amber-300"
+                >
+                  View Details
+                </Link>
               </div>
             ) : (
               <p className="text-sm text-slate-400">Complete checkout to see order history here.</p>

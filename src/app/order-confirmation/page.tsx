@@ -167,7 +167,7 @@ function OrderConfirmationContent() {
             Continue Shopping
           </Link>
           <Link
-            href="/account"
+            href={`/orders/${orderId || lastOrder?.id || "latest"}`}
             className="flex-1 rounded-lg border border-white/10 px-6 py-3 text-center font-semibold text-slate-300 transition-all duration-200 hover:bg-slate-800/50"
           >
             View Order Details

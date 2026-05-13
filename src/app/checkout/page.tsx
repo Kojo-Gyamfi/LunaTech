@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { useCartStore } from "@/lib/store";
 import { CustomerInfo, ShippingAddress, PaymentInfo } from "@/types";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
@@ -81,15 +82,15 @@ export default function CheckoutPage() {
   // Step navigation
   const handleNext = () => {
     if (currentStep === 1 && !validateStep1()) {
-      alert("Please fill in all customer information fields");
+      toast.error("Please fill in all customer information fields.");
       return;
     }
     if (currentStep === 2 && !validateStep2()) {
-      alert("Please fill in all shipping address fields");
+      toast.error("Please fill in all shipping address fields.");
       return;
     }
     if (currentStep === 3 && !validateStep3()) {
-      alert("Please fill in all payment information fields correctly");
+      toast.error("Please fill in all payment information fields correctly.");
       return;
     }
 
@@ -126,16 +127,24 @@ export default function CheckoutPage() {
         }),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        setLastOrder(result.order);
-        clearCart();
-        resetCheckout();
-        router.push(`/order-confirmation?orderId=${result.id}`);
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to submit order.");
       }
+
+      setLastOrder(result.order);
+      clearCart();
+      resetCheckout();
+      toast.success("Order placed successfully.");
+      router.push(`/order-confirmation?orderId=${result.id}`);
     } catch (error) {
       console.error("Error submitting order:", error);
-      alert("Failed to submit order. Please try again.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to submit order. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -406,7 +415,7 @@ export default function CheckoutPage() {
                         <option value="Ghana">Ghana</option>
                         <option value="Nigeria">Nigeria</option>
                         <option value="Senegal">Senegal</option>
-                        <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+                        <option value="Cote d'Ivoire">Cote d&apos;Ivoire</option>
                         <option value="Kenya">Kenya</option>
                         <option value="Egypt">Egypt</option>
                         <option value="South Africa">South Africa</option>

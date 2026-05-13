@@ -18,7 +18,21 @@ export default function Navbar() {
   const itemCount = useCartStore((state) => state.getItemCount());
 
   useEffect(() => {
-    setIsHydrated(true);
+    if (!useCartStore.persist) {
+      return undefined;
+    }
+
+    const markHydrated = () => {
+      setIsHydrated(true);
+    };
+
+    const unsubscribe = useCartStore.persist.onFinishHydration(markHydrated);
+
+    if (useCartStore.persist.hasHydrated()) {
+      queueMicrotask(markHydrated);
+    }
+
+    return unsubscribe;
   }, []);
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
