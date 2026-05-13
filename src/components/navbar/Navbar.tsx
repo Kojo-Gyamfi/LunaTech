@@ -2,15 +2,27 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import type { FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store';
 import CartSlideout from '@/components/cart/CartSlideout';
 import { ShoppingCart, Search, User, Menu, X } from 'lucide-react';
 
 export default function Navbar() {
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const router = useRouter();
   const itemCount = useCartStore((state) => state.getItemCount());
+
+  const handleSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchValue.trim();
+    router.push(query ? `/?q=${encodeURIComponent(query)}` : '/');
+    setIsSearchActive(false);
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -23,7 +35,7 @@ export default function Navbar() {
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-300 to-amber-400 rounded-lg flex items-center justify-center group-hover:shadow-lg transition-shadow duration-200">
                   <span className="text-slate-950 font-bold text-sm sm:text-base">Λ</span>
                 </div>
-                <span className="text-lg sm:text-xl font-display font-bold text-amber-300 hidden sm:inline">
+                <span className="text-base sm:text-lg font-display font-bold text-amber-300 hidden sm:inline">
                   LunaTech
                 </span>
               </div>
@@ -37,18 +49,18 @@ export default function Navbar() {
               >
                 Catalog
               </Link>
-              <a
-                href="#"
+              <Link
+                href="/about"
                 className="px-3 py-2 text-sm text-slate-300 hover:text-amber-300 transition-colors duration-200"
               >
                 About
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/support"
                 className="px-3 py-2 text-sm text-slate-300 hover:text-amber-300 transition-colors duration-200"
               >
                 Support
-              </a>
+              </Link>
             </div>
 
             {/* Search & Actions */}
@@ -56,13 +68,17 @@ export default function Navbar() {
               {/* Search */}
               <div className="hidden sm:flex items-center">
                 {isSearchActive ? (
-                  <input
-                    autoFocus
-                    type="text"
-                    placeholder="Search products..."
-                    className="bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400/50 w-32 lg:w-48 transition-all duration-200"
-                    onBlur={() => setIsSearchActive(false)}
-                  />
+                  <form onSubmit={handleSearch}>
+                    <input
+                      autoFocus
+                      type="text"
+                      value={searchValue}
+                      placeholder="Search products..."
+                      className="bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400/50 w-32 lg:w-48 transition-all duration-200"
+                      onChange={(event) => setSearchValue(event.target.value)}
+                      onBlur={() => !searchValue.trim() && setIsSearchActive(false)}
+                    />
+                  </form>
                 ) : (
                   <button
                     onClick={() => setIsSearchActive(true)}
@@ -74,9 +90,13 @@ export default function Navbar() {
               </div>
 
               {/* Account */}
-              <button className="hidden sm:flex p-2 text-slate-400 hover:text-amber-300 transition-colors duration-200">
+              <Link
+                href="/account"
+                className="hidden sm:flex p-2 text-slate-400 hover:text-amber-300 transition-colors duration-200"
+                aria-label="Account"
+              >
                 <User size={20} />
-              </button>
+              </Link>
 
               {/* Cart */}
               <button
@@ -110,18 +130,27 @@ export default function Navbar() {
               >
                 Catalog
               </Link>
-              <a
-                href="#"
+              <Link
+                href="/about"
+                onClick={() => setIsMobileMenuOpen(false)}
                 className="block px-3 py-2 text-sm text-slate-300 hover:text-amber-300 hover:bg-slate-900/30 rounded transition-colors duration-200"
               >
                 About
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/support"
+                onClick={() => setIsMobileMenuOpen(false)}
                 className="block px-3 py-2 text-sm text-slate-300 hover:text-amber-300 hover:bg-slate-900/30 rounded transition-colors duration-200"
               >
                 Support
-              </a>
+              </Link>
+              <Link
+                href="/account"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block px-3 py-2 text-sm text-slate-300 hover:text-amber-300 hover:bg-slate-900/30 rounded transition-colors duration-200"
+              >
+                Account
+              </Link>
             </div>
           )}
         </div>

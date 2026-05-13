@@ -31,9 +31,10 @@ html {
 }
 
 body {
-  @apply bg-slate-950 text-slate-100 font-sans;
+  @apply bg-slate-950 text-slate-100 font-sans text-[15px];
   background-image: 
-    radial-gradient(at 50% 0%, rgba(251, 191, 36, 0.05) 0%, transparent 50%);
+    linear-gradient(180deg, rgba(15, 23, 42, 0.4), transparent 320px),
+    radial-gradient(at 50% 0%, rgba(251, 191, 36, 0.07) 0%, transparent 48%);
 }
 
 /* Typography system */
@@ -42,15 +43,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  @apply text-5xl sm:text-6xl leading-tight;
+  @apply text-4xl sm:text-5xl leading-tight;
 }
 
 h2 {
-  @apply text-4xl sm:text-5xl leading-snug;
+  @apply text-3xl sm:text-4xl leading-snug;
 }
 
 h3 {
-  @apply text-2xl sm:text-3xl leading-snug;
+  @apply text-xl sm:text-2xl leading-snug;
 }
 
 h4 {
@@ -58,7 +59,7 @@ h4 {
 }
 
 p {
-  @apply text-base leading-relaxed text-slate-400;
+  @apply text-sm leading-relaxed text-slate-400;
 }
 
 a {
@@ -114,7 +115,7 @@ button, [role="button"] {
 
 /* Custom utility classes */
 .glass {
-  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-lg;
+  @apply bg-white/[0.055] backdrop-blur-md border border-white/10 rounded-lg shadow-2xl shadow-black/20;
 }
 
 .glass-sm {
@@ -126,7 +127,7 @@ button, [role="button"] {
 }
 
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-300 to-amber-400;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-200 via-amber-300 to-cyan-200;
 }
 
 .btn-luxury {

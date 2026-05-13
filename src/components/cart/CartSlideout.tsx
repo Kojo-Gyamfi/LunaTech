@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCartStore } from '@/lib/store';
 import { X, Plus, Minus, Trash2 } from 'lucide-react';
+import ProductImage from '@/components/product/ProductImage';
 
 interface CartSlideoutProps {
   isOpen: boolean;
@@ -64,10 +65,10 @@ export default function CartSlideout({ isOpen, onClose }: CartSlideoutProps) {
                   <div className="flex gap-4">
                     {/* Product Image */}
                     <div className="flex-shrink-0 w-20 h-20 bg-slate-800 rounded-lg overflow-hidden">
-                      <img
+                      <ProductImage
                         src={item.product.image}
                         alt={item.product.name}
-                        className="w-full h-full object-cover"
+                        category={item.product.category}
                       />
                     </div>
 

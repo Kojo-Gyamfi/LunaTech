@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CartItem, Product, CustomerInfo, ShippingAddress, PaymentInfo } from '@/types';
+import { CartItem, Product, CustomerInfo, ShippingAddress, PaymentInfo, Order } from '@/types';
 
 export interface CheckoutState {
   customerInfo: CustomerInfo | null;
@@ -13,6 +13,7 @@ export interface CheckoutState {
 export interface CartStore {
   items: CartItem[];
   checkoutState: CheckoutState;
+  lastOrder: Order | null;
 
   // Cart actions
   addItem: (product: Product, quantity: number) => void;
@@ -25,6 +26,7 @@ export interface CartStore {
   setShippingAddress: (address: ShippingAddress) => void;
   setPaymentInfo: (info: PaymentInfo) => void;
   resetCheckout: () => void;
+  setLastOrder: (order: Order) => void;
 
   // Getters
   getCartTotal: () => number;
@@ -46,6 +48,7 @@ export const useCartStore = create<CartStore>()(
         shippingAddress: null,
         paymentInfo: null,
       },
+      lastOrder: null,
 
       addItem: (product: Product, quantity: number) => {
         set((state) => {
@@ -120,6 +123,10 @@ export const useCartStore = create<CartStore>()(
             paymentInfo: null,
           },
         });
+      },
+
+      setLastOrder: (order: Order) => {
+        set({ lastOrder: order });
       },
 
       getSubtotal: () => {

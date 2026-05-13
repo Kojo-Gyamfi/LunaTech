@@ -57,6 +57,9 @@ export interface Order {
   customerInfo: CustomerInfo;
   shippingAddress: ShippingAddress;
   total: number;
+  subtotal?: number;
+  shipping?: number;
+  tax?: number;
   createdAt: string;
   estimatedDelivery: string;
 }

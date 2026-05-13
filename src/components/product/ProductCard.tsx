@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Product } from '@/types';
 import { useCartStore } from '@/lib/store';
 import { ShoppingCart, Sparkles } from 'lucide-react';
+import ProductImage from './ProductImage';
 
 interface ProductCardProps {
   product: Product;
@@ -32,23 +33,24 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group">
       {/* Card Container */}
-      <div className="glass rounded-xl overflow-hidden hover:glass-lg transition-all duration-300 h-full flex flex-col">
+      <div className="glass overflow-hidden rounded-lg h-full flex flex-col shadow-2xl shadow-black/25 transition-all duration-300 hover:-translate-y-1 hover:border-amber-300/30 hover:bg-white/[0.07]">
         {/* Image Container */}
         <Link href={`/products/${product.id}`}>
-          <div className="relative w-full aspect-square bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden cursor-pointer">
+          <div className="relative w-full aspect-square bg-gradient-to-br from-slate-900 to-black overflow-hidden cursor-pointer">
             {/* Limited Badge */}
             {product.isLimited && (
-              <div className="absolute top-3 right-3 z-10 bg-amber-400/90 backdrop-blur-sm text-slate-950 px-3 py-1 rounded-full flex items-center space-x-1">
-                <Sparkles size={14} />
-                <span className="text-xs font-bold">Limited</span>
+              <div className="absolute top-3 right-3 z-10 bg-amber-300/95 backdrop-blur-sm text-slate-950 px-2.5 py-1 rounded-full flex items-center space-x-1 shadow-lg shadow-black/20">
+                <Sparkles size={12} />
+                <span className="text-[0.64rem] font-bold uppercase tracking-[0.12em]">Limited</span>
               </div>
             )}
 
             {/* Image */}
-            <img
+            <ProductImage
               src={product.image}
               alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              category={product.category}
+              className="group-hover:scale-105 transition-transform duration-500"
             />
 
             {/* Overlay on Hover */}
@@ -57,23 +59,23 @@ export default function ProductCard({ product }: ProductCardProps) {
         </Link>
 
         {/* Content */}
-        <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between">
+        <div className="flex-1 p-3.5 flex flex-col justify-between">
           {/* Product Info */}
           <div>
             {/* Category */}
-            <p className="text-xs font-semibold text-amber-300/70 uppercase tracking-wider mb-2">
+            <p className="text-[0.62rem] font-semibold text-amber-300/70 uppercase tracking-[0.18em] mb-2">
               {product.category}
             </p>
 
             {/* Name */}
             <Link href={`/products/${product.id}`}>
-              <h3 className="text-sm sm:text-base font-semibold text-slate-100 line-clamp-2 hover:text-amber-300 transition-colors duration-200 mb-2">
+              <h3 className="text-[0.82rem] font-semibold leading-snug text-slate-100 line-clamp-2 hover:text-amber-300 transition-colors duration-200 mb-2">
                 {product.name}
               </h3>
             </Link>
 
             {/* Stock Status */}
-            <p className="text-xs text-slate-500">
+            <p className="text-[0.72rem] text-slate-500">
               {product.stock > 0 ? (
                 <span className="text-emerald-400">
                   {product.stock} in stock
@@ -85,10 +87,10 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Footer */}
-          <div className="mt-4 space-y-3 border-t border-white/5 pt-4">
+          <div className="mt-3 space-y-2.5 border-t border-white/5 pt-3">
             {/* Price */}
             <div className="flex items-baseline justify-between">
-              <span className="text-2xl sm:text-3xl font-bold text-amber-300">
+              <span className="text-lg sm:text-xl font-bold text-amber-300">
                 ${product.price.toLocaleString()}
               </span>
             </div>
@@ -97,16 +99,16 @@ export default function ProductCard({ product }: ProductCardProps) {
             <button
               onClick={handleAddToCart}
               disabled={product.stock === 0 || isAdding}
-              className="w-full py-2.5 sm:py-3 bg-amber-400 text-slate-950 font-semibold rounded-lg hover:bg-amber-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2 active:scale-95"
+              className="w-full py-2.5 bg-amber-400 text-slate-950 text-xs font-semibold rounded-lg hover:bg-amber-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2 active:scale-95"
             >
-              <ShoppingCart size={18} />
+              <ShoppingCart size={15} />
               <span>{isAdding ? 'Adding...' : 'Add to Cart'}</span>
             </button>
 
             {/* Notification */}
             {showNotification && (
-              <div className="text-xs text-emerald-400 font-semibold text-center animate-pulse">
-                ✓ Added to cart
+              <div className="text-[0.7rem] text-emerald-400 font-semibold text-center animate-pulse">
+                Added to cart
               </div>
             )}
           </div>
@@ -115,3 +117,4 @@ export default function ProductCard({ product }: ProductCardProps) {
     </div>
   );
 }
+

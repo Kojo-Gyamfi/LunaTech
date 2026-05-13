@@ -21,6 +21,9 @@ export async function POST(request: Request) {
       customerInfo: body.customerInfo,
       shippingAddress: body.shippingAddress,
       total: body.total,
+      subtotal: body.subtotal,
+      shipping: body.shipping,
+      tax: body.tax,
       createdAt: new Date().toISOString(),
       estimatedDelivery: new Date(
         Date.now() + 6 * 24 * 60 * 60 * 1000

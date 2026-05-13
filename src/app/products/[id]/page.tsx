@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { use, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { mockProducts } from '@/lib/mockData';
 import { useCartStore } from '@/lib/store';
 import ProductCard from '@/components/product/ProductCard';
-import { ChevronLeft, ShoppingCart, Sparkles, Check, X } from 'lucide-react';
+import ProductImage from '@/components/product/ProductImage';
+import { ChevronLeft, ShoppingCart, Sparkles, Check, X, Minus, Plus } from 'lucide-react';
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
@@ -14,21 +15,15 @@ interface ProductDetailPageProps {
 export default function ProductDetailPage({
   params: paramsPromise,
 }: ProductDetailPageProps) {
-  const [params, setParams] = useState<{ id: string } | null>(null);
+  const params = use(paramsPromise);
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const addItem = useCartStore((state) => state.addItem);
 
-  // Unwrap params
-  if (!params) {
-    paramsPromise.then(setParams);
-  }
-
   // Find product
   const product = useMemo(() => {
-    if (!params) return null;
     return mockProducts.find((p) => p.id === params.id);
   }, [params]);
 
@@ -48,7 +43,13 @@ export default function ProductDetailPage({
     return (
       <main className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
         <div className="text-center">
-          <p className="text-lg text-slate-400 mb-4">Loading product...</p>
+          <p className="text-lg text-slate-400 mb-4">Product not found.</p>
+          <Link
+            href="/"
+            className="inline-flex rounded-lg bg-amber-400 px-5 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-300"
+          >
+            Back to Catalog
+          </Link>
         </div>
       </main>
     );
@@ -82,10 +83,10 @@ export default function ProductDetailPage({
           <div className="space-y-4">
             {/* Main Image */}
             <div className="relative w-full aspect-square bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl overflow-hidden glass">
-              <img
+              <ProductImage
                 src={product.images[selectedImageIndex]}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                category={product.category}
               />
 
               {/* Limited Badge */}
@@ -110,10 +111,10 @@ export default function ProductDetailPage({
                         : 'border-white/10 hover:border-white/20'
                     }`}
                   >
-                    <img
+                    <ProductImage
                       src={image}
                       alt={`${product.name} ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      category={product.category}
                     />
                   </button>
                 ))}
@@ -131,19 +132,19 @@ export default function ProductDetailPage({
               </p>
 
               {/* Title */}
-              <h1 className="text-4xl sm:text-5xl font-bold text-slate-100">
+              <h1 className="text-3xl sm:text-4xl font-bold text-slate-100">
                 {product.name}
               </h1>
 
               {/* Price */}
               <div className="flex items-baseline space-x-4 pt-4 border-t border-white/10">
-                <span className="text-5xl font-bold text-amber-300">
+                <span className="text-3xl sm:text-4xl font-bold text-amber-300">
                   ${product.price.toLocaleString()}
                 </span>
               </div>
 
               {/* Description */}
-              <p className="text-lg text-slate-400 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
                 {product.description}
               </p>
 
@@ -169,7 +170,7 @@ export default function ProductDetailPage({
 
             {/* Specs */}
             <div className="my-8 glass rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-slate-100 mb-4">
+              <h3 className="text-base font-semibold text-slate-100 mb-4">
                 Technical Specifications
               </h3>
               <div className="grid grid-cols-2 gap-4">
@@ -193,7 +194,7 @@ export default function ProductDetailPage({
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="text-slate-400 hover:text-slate-200 transition-colors duration-200"
                   >
-                    −
+                    <Minus size={16} />
                   </button>
                   <span className="text-lg font-semibold text-slate-200 w-8 text-center">
                     {quantity}
@@ -205,7 +206,7 @@ export default function ProductDetailPage({
                     disabled={quantity >= product.stock}
                     className="text-slate-400 hover:text-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                   >
-                    +
+                    <Plus size={16} />
                   </button>
                 </div>
               </div>
@@ -246,7 +247,7 @@ export default function ProductDetailPage({
       {relatedProducts.length > 0 && (
         <section className="px-4 sm:px-6 lg:px-8 py-16 border-t border-white/5">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl font-bold text-slate-100 mb-8">
+            <h2 className="text-2xl font-bold text-slate-100 mb-8">
               Related Products
             </h2>
 

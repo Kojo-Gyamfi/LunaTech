@@ -19,6 +19,7 @@ export default function CheckoutPage() {
   const setCustomerInfo = useCartStore((state) => state.setCustomerInfo);
   const setShippingAddress = useCartStore((state) => state.setShippingAddress);
   const setPaymentInfo = useCartStore((state) => state.setPaymentInfo);
+  const setLastOrder = useCartStore((state) => state.setLastOrder);
   const clearCart = useCartStore((state) => state.clearCart);
   const resetCheckout = useCartStore((state) => state.resetCheckout);
   const subtotal = useCartStore((state) => state.getSubtotal());
@@ -118,15 +119,19 @@ export default function CheckoutPage() {
           customerInfo,
           shippingAddress,
           paymentInfo,
+          subtotal,
+          shipping,
+          tax,
           total,
         }),
       });
 
       if (response.ok) {
-        const order = await response.json();
+        const result = await response.json();
+        setLastOrder(result.order);
         clearCart();
         resetCheckout();
-        router.push(`/order-confirmation?orderId=${order.id}`);
+        router.push(`/order-confirmation?orderId=${result.id}`);
       }
     } catch (error) {
       console.error('Error submitting order:', error);
@@ -141,7 +146,7 @@ export default function CheckoutPage() {
     return (
       <main className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <h1 className="text-3xl font-bold text-slate-100 mb-4">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 mb-4">
             Cart is Empty
           </h1>
           <p className="text-slate-400 mb-6">
@@ -204,15 +209,15 @@ export default function CheckoutPage() {
             </div>
 
             {/* Step Content */}
-            <div className="glass rounded-xl p-8">
+            <div className="glass rounded-xl p-5 sm:p-8">
               {/* Step 1: Customer Information */}
               {currentStep === 1 && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-slate-100">
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-100">
                     Contact Information
                   </h2>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-slate-300 mb-2">
                         First Name
@@ -291,7 +296,7 @@ export default function CheckoutPage() {
               {/* Step 2: Shipping Address */}
               {currentStep === 2 && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-slate-100">
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-100">
                     Shipping Address
                   </h2>
 
@@ -313,7 +318,7 @@ export default function CheckoutPage() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-slate-300 mb-2">
                         City
@@ -351,7 +356,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-slate-300 mb-2">
                         ZIP/Postal Code
@@ -388,7 +393,7 @@ export default function CheckoutPage() {
               {/* Step 3: Payment Information */}
               {currentStep === 3 && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-slate-100">
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-100">
                     Payment Information
                   </h2>
 
@@ -433,7 +438,7 @@ export default function CheckoutPage() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-slate-300 mb-2">
                         Expiry Date
@@ -488,7 +493,7 @@ export default function CheckoutPage() {
               {/* Step 4: Review */}
               {currentStep === 4 && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-slate-100">
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-100">
                     Review Your Order
                   </h2>
 
@@ -553,7 +558,7 @@ export default function CheckoutPage() {
                 <button
                   onClick={handlePrevious}
                   disabled={currentStep === 1}
-                  className="flex-1 py-3 border border-white/10 text-slate-300 font-semibold rounded-lg hover:bg-slate-800/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2"
+                  className="flex-1 py-3 border border-white/10 text-slate-300 font-semibold rounded-lg hover:bg-slate-800/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
                 >
                   <ChevronLeft size={18} />
                   <span>Previous</span>
@@ -562,7 +567,7 @@ export default function CheckoutPage() {
                 {currentStep < 4 ? (
                   <button
                     onClick={handleNext}
-                    className="flex-1 py-3 bg-amber-400 text-slate-950 font-semibold rounded-lg hover:bg-amber-300 transition-all duration-200 flex items-center justify-center space-x-2"
+                    className="flex-1 py-3 bg-amber-400 text-slate-950 font-semibold rounded-lg hover:bg-amber-300 transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
                   >
                     <span>Next</span>
                     <ChevronRight size={18} />
@@ -571,7 +576,7 @@ export default function CheckoutPage() {
                   <button
                     onClick={handleSubmitOrder}
                     disabled={isSubmitting}
-                    className="flex-1 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2"
+                    className="flex-1 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
                   >
                     <Check size={18} />
                     <span>{isSubmitting ? 'Placing Order...' : 'Place Order'}</span>
