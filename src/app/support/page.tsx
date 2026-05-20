@@ -5,6 +5,48 @@ import { CheckCircle, Mail, MessageSquare, Phone } from "lucide-react";
 
 export default function SupportPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    setSubmitted(false);
+    setErrorMessage("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/support", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          email: formData.get("email"),
+          topic: formData.get("topic"),
+          message: formData.get("message"),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error ?? "Failed to send message.");
+      }
+
+      setSubmitted(true);
+      form.reset();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Failed to send message.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-slate-950">
@@ -27,8 +69,12 @@ export default function SupportPage() {
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="space-y-4">
             {[
-              { icon: Mail, label: "Email", value: "support@lunatech.example" },
-              { icon: Phone, label: "Phone", value: "+1 (555) 018-2040" },
+              {
+                icon: Mail,
+                label: "Email",
+                value: "emmanuelnanagyamfi@gmail.com",
+              },
+              { icon: Phone, label: "Phone", value: "+233 559 038 128" },
               {
                 icon: MessageSquare,
                 label: "Live Desk",
@@ -44,17 +90,19 @@ export default function SupportPage() {
           </div>
 
           <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              setSubmitted(true);
-              event.currentTarget.reset();
-            }}
+            onSubmit={handleSubmit}
             className="glass rounded-lg p-5 sm:p-6 lg:col-span-2"
           >
             {submitted && (
               <div className="mb-5 flex items-center gap-3 rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm text-emerald-300">
                 <CheckCircle size={18} />
-                Message received. We will respond shortly.
+                Message sent. We will respond shortly.
+              </div>
+            )}
+
+            {errorMessage && (
+              <div className="mb-5 rounded-lg border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-300">
+                {errorMessage}
               </div>
             )}
 
@@ -104,8 +152,12 @@ export default function SupportPage() {
               />
             </label>
 
-            <button className="mt-5 rounded-lg bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 hover:bg-amber-300 transition-all duration-200">
-              Send Message
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="mt-5 rounded-lg bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 hover:bg-amber-300 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSubmitting ? "Sending..." : "Send Message"}
             </button>
           </form>
         </div>
