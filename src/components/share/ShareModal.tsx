@@ -50,7 +50,11 @@ export default function ShareModal({
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center px-4"
+        onClick={onClose}
+        role="presentation"
+      >
         <div
           className="glass w-full max-w-sm rounded-2xl shadow-2xl border border-white/10 p-8 animate-in fade-in zoom-in duration-200"
           onClick={(e) => e.stopPropagation()}

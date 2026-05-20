@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/navbar/Navbar";
 import ToastProvider from "@/components/ToastProvider";
@@ -18,7 +18,12 @@ export const metadata: Metadata = {
   title: "LunaTech - Premium Tech Collection",
   description:
     "Curated luxury electronics and gadgets for the discerning tech enthusiast",
-  viewport: "width=device-width, initial-scale=1.0, viewport-fit=cover",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

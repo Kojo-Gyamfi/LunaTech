@@ -25,22 +25,18 @@ export default function CartSlideout({ isOpen, onClose }: CartSlideoutProps) {
     toast.success(`${productName} removed from cart.`);
   };
 
+  if (!isOpen) return null;
+
   return (
     <>
       {/* Backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200"
-          onClick={onClose}
-        />
-      )}
+      <div
+        className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200"
+        onClick={onClose}
+      />
 
       {/* Slideout Panel */}
-      <div
-        className={`fixed right-0 top-0 h-full w-full sm:w-96 bg-slate-900 border-l border-white/10 z-50 transform transition-transform duration-300 overflow-y-auto ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
+      <div className="fixed right-0 top-0 h-full w-full sm:w-96 bg-slate-900 border-l border-white/10 z-50 overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-slate-900/95 backdrop-blur-sm border-b border-white/10 px-6 py-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-100">

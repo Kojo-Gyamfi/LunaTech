@@ -80,6 +80,9 @@ a:where(:not([class*="bg-"])) {
 button,
 [role="button"] {
   @apply transition-all duration-200 cursor-pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
 
   &:active {
     @apply scale-95;
@@ -88,6 +91,14 @@ button,
   &:disabled {
     @apply opacity-50 cursor-not-allowed;
   }
+}
+
+[data-sonner-toaster] {
+  pointer-events: none;
+}
+
+[data-sonner-toast] {
+  pointer-events: auto;
 }
 
 /* Selection styles */
@@ -159,11 +170,13 @@ button,
 
 .product-hover-overlay {
   opacity: 0;
+  pointer-events: none;
   transition: opacity 420ms ease;
 }
 
 .product-hover-cta {
   opacity: 0;
+  pointer-events: none;
   transform: translateY(0.85rem);
   transition:
     opacity 420ms ease,

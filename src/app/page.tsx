@@ -71,7 +71,7 @@ export default function CatalogPage() {
   return (
     <main className="min-h-screen bg-slate-950">
       <section className="relative overflow-hidden px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_15%,rgba(251,191,36,0.16),transparent_34%),radial-gradient(circle_at_80%_10%,rgba(34,211,238,0.10),transparent_26%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_15%,rgba(251,191,36,0.16),transparent_34%),radial-gradient(circle_at_80%_10%,rgba(34,211,238,0.10),transparent_26%)]" />
         <div className="relative mx-auto max-w-7xl text-center">
           <p className="mb-3 text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-amber-200/70">
             Signature Collection

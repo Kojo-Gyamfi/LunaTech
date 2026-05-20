@@ -1,7 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { CartItem, Product, CustomerInfo, ShippingAddress, PaymentInfo, Order } from '@/types';
 
 export interface CheckoutState {
@@ -38,6 +38,36 @@ export interface CartStore {
 
 const SHIPPING_COST = 50;
 const TAX_RATE = 0.08;
+
+const memoryStorage = new Map<string, string>();
+
+const safeStorage = {
+  getItem: (name: string) => {
+    try {
+      return window.localStorage.getItem(name) ?? memoryStorage.get(name) ?? null;
+    } catch {
+      return memoryStorage.get(name) ?? null;
+    }
+  },
+  setItem: (name: string, value: string) => {
+    memoryStorage.set(name, value);
+
+    try {
+      window.localStorage.setItem(name, value);
+    } catch {
+      // Some mobile browsers block localStorage in private or embedded contexts.
+    }
+  },
+  removeItem: (name: string) => {
+    memoryStorage.delete(name);
+
+    try {
+      window.localStorage.removeItem(name);
+    } catch {
+      // Keep cart interactions working even if persistent storage is unavailable.
+    }
+  },
+};
 
 export const useCartStore = create<CartStore>()(
   persist(
@@ -156,6 +186,7 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: 'luna-tech-cart',
+      storage: createJSONStorage(() => safeStorage),
     }
   )
 );

@@ -101,8 +101,8 @@ export default function ProductImage({
         aria-label={alt}
         role="img"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.18),transparent_34%)]" />
-        <div className="absolute bottom-0 left-1/2 h-1/2 w-4/5 -translate-x-1/2 rounded-t-full bg-black/20 blur-2xl" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.18),transparent_34%)]" />
+        <div className="pointer-events-none absolute bottom-0 left-1/2 h-1/2 w-4/5 -translate-x-1/2 rounded-t-full bg-black/20 blur-2xl" />
         <div className="relative grid h-24 w-24 place-items-center rounded-2xl border border-white/15 bg-white/10 text-amber-200 shadow-2xl shadow-amber-950/30 backdrop-blur">
           <Icon size={42} strokeWidth={1.5} />
         </div>

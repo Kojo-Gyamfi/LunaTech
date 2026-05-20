@@ -10,7 +10,7 @@ export default function AboutPage() {
   return (
     <main className="min-h-screen bg-slate-950">
       <section className="relative overflow-hidden px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(251,191,36,0.14),transparent_32%),radial-gradient(circle_at_80%_20%,rgba(34,211,238,0.09),transparent_28%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(251,191,36,0.14),transparent_32%),radial-gradient(circle_at_80%_20%,rgba(34,211,238,0.09),transparent_28%)]" />
         <div className="relative mx-auto max-w-5xl">
           <p className="mb-3 text-[0.68rem] font-semibold uppercase tracking-[0.32em] text-amber-200/70">
             About LunaTech

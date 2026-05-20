@@ -44,6 +44,7 @@ export const generateShareUrl = (
 export const copyToClipboard = async (text: string): Promise<boolean> => {
   try {
     if (
+      window.isSecureContext &&
       navigator.clipboard &&
       typeof navigator.clipboard.writeText === "function"
     ) {
@@ -102,11 +103,11 @@ export const shareProduct = async (
       if ((error as Error).name === "AbortError") {
         return;
       }
-      window.open(shareUrl, "_blank", "width=600,height=400");
+      window.location.assign(shareUrl);
       toast.success(`Shared on ${platform}!`);
     }
   } else {
-    window.open(shareUrl, "_blank", "width=600,height=400");
+    window.location.assign(shareUrl);
     toast.success(`Shared on ${platform}!`);
   }
 };
