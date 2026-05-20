@@ -7,6 +7,18 @@ import { ChevronDown, Search, X } from 'lucide-react';
 
 type SortOption = 'newest' | 'price-low' | 'price-high' | 'popular';
 
+const matchesCategoryFilter = (product: (typeof mockProducts)[number], selectedCategory: string) => {
+  if (selectedCategory === 'iPhones') {
+    return product.name.toLowerCase().includes('iphone');
+  }
+
+  if (selectedCategory === 'Mobile Phones') {
+    return product.category === 'Luxury Smartphones';
+  }
+
+  return product.category === selectedCategory;
+};
+
 export default function CatalogPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All Products');
   const [selectedPriceRange, setSelectedPriceRange] = useState<number | null>(null);
@@ -30,7 +42,7 @@ export default function CatalogPage() {
     let filtered = [...mockProducts];
 
     if (selectedCategory !== 'All Products') {
-      filtered = filtered.filter((product) => product.category === selectedCategory);
+      filtered = filtered.filter((product) => matchesCategoryFilter(product, selectedCategory));
     }
 
     if (searchQuery.trim()) {
@@ -85,7 +97,7 @@ export default function CatalogPage() {
         </div>
       </section>
 
-      <section className="sticky top-20 z-30 border-b border-white/5 bg-slate-950/95 px-4 py-4 backdrop-blur-md sm:top-24 sm:px-6 lg:px-8">
+      <section className="sticky top-15 sm:top-20 z-30 border-b border-white/5 bg-slate-950/95 px-4 py-4 backdrop-blur-md  sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="relative">

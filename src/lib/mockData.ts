@@ -1010,6 +1010,8 @@ export const categories = [
   "Headphones",
   "Smart Speakers",
   "Luxury Smartphones",
+  "iPhones",
+  "Mobile Phones",
   "Computing",
   "Wearables",
   "Accessories",
