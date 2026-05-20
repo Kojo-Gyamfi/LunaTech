@@ -7,6 +7,8 @@ import { mockProducts } from "@/lib/mockData";
 import { useCartStore } from "@/lib/store";
 import ProductCard from "@/components/product/ProductCard";
 import ProductImage from "@/components/product/ProductImage";
+import ShareButton from "@/components/share/ShareButton";
+import ShareModal from "@/components/share/ShareModal";
 import {
   ChevronLeft,
   ShoppingCart,
@@ -28,6 +30,7 @@ export default function ProductDetailPage({
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const addItem = useCartStore((state) => state.addItem);
 
@@ -247,6 +250,9 @@ export default function ProductDetailPage({
                 )}
               </button>
 
+              {/* Share Button */}
+              <ShareButton onClick={() => setIsShareModalOpen(true)} />
+
               {/* Info Text */}
               <p className="text-xs text-slate-500 text-center">
                 Free shipping on orders over $500. Returns within 30 days.
@@ -272,6 +278,13 @@ export default function ProductDetailPage({
           </div>
         </section>
       )}
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        product={product}
+      />
     </main>
   );
 }

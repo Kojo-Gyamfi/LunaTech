@@ -16,7 +16,9 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "LunaTech - Premium Tech Collection",
-  description: "Curated luxury electronics and gadgets for the discerning tech enthusiast",
+  description:
+    "Curated luxury electronics and gadgets for the discerning tech enthusiast",
+  viewport: "width=device-width, initial-scale=1.0, viewport-fit=cover",
 };
 
 export default function RootLayout({
