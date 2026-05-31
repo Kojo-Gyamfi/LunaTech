@@ -10,9 +10,13 @@ import ProductImage from './ProductImage';
 
 interface ProductCardProps {
   product: Product;
+  imageLoading?: 'eager' | 'lazy';
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  imageLoading = 'lazy',
+}: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
 
@@ -52,6 +56,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               alt={product.name}
               category={product.category}
               className="product-hover-image"
+              loading={imageLoading}
             />
 
             {/* Overlay on Hover */}

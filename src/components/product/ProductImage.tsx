@@ -19,6 +19,7 @@ interface ProductImageProps {
   alt: string;
   category: string;
   className?: string;
+  loading?: 'eager' | 'lazy';
 }
 
 const categoryStyles: Record<string, { icon: typeof Headphones; label: string; glow: string }> = {
@@ -89,6 +90,7 @@ export default function ProductImage({
   alt,
   category,
   className = '',
+  loading = 'lazy',
 }: ProductImageProps) {
   const [hasError, setHasError] = useState(false);
   const style = categoryStyles[category] ?? categoryStyles['Tech Accessories'];
@@ -119,6 +121,7 @@ export default function ProductImage({
         src={src}
         alt={alt}
         fill
+        loading={loading}
         sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
         onError={() => setHasError(true)}
         className="object-cover"

@@ -5,11 +5,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import {
   ArrowRight,
-  Code2,
-  Globe2,
   Mail,
   MapPin,
-  MessageCircle,
   Phone,
   ShieldCheck,
   Truck,
@@ -28,24 +25,6 @@ const supportLinks = [
   { label: "Support Center", href: "/support" },
   { label: "My Account", href: "/account" },
   { label: "Checkout", href: "/checkout" },
-];
-
-const socialLinks = [
-  {
-    label: "Instagram",
-    href: "https://www.instagram.com/",
-    icon: MessageCircle,
-  },
-  {
-    label: "Facebook",
-    href: "https://www.facebook.com/",
-    icon: Globe2,
-  },
-  {
-    label: "GitHub",
-    href: "https://github.com/",
-    icon: Code2,
-  },
 ];
 
 export default function Footer() {
@@ -198,24 +177,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 border-t border-white/10 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="border-t border-white/10 py-5">
           <p className="text-xs text-slate-500">
             (c) 2026 LunaTech. All rights reserved.
           </p>
-          <div className="flex items-center gap-3">
-            {socialLinks.map(({ label, href, icon: Icon }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={label}
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-slate-400 hover:border-amber-300/40 hover:text-amber-300"
-              >
-                <Icon size={17} />
-              </a>
-            ))}
-          </div>
         </div>
       </div>
     </footer>
