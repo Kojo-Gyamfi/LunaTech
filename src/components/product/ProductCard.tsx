@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Product } from '@/types';
 import { useCartStore } from '@/lib/store';
+import { usePressHandlers } from '@/lib/usePressHandlers';
 import { ShoppingCart, Sparkles } from 'lucide-react';
 import ProductImage from './ProductImage';
 
@@ -34,6 +35,12 @@ export default function ProductCard({
       setIsAdding(false);
     }, 300);
   };
+  const addToCartPressHandlers = usePressHandlers<HTMLButtonElement>(
+    handleAddToCart,
+    {
+      disabled: product.stock === 0 || isAdding,
+    },
+  );
 
   return (
     <div className="product-hover-group group h-full">
@@ -108,7 +115,7 @@ export default function ProductCard({
 
             {/* Add to Cart Button */}
             <button
-              onClick={handleAddToCart}
+              {...addToCartPressHandlers}
               disabled={product.stock === 0 || isAdding}
               className="w-full py-2.5 bg-amber-400 text-slate-950 text-xs font-semibold rounded-lg hover:bg-amber-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2 active:scale-95"
             >

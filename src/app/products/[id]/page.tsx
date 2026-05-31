@@ -5,6 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { mockProducts } from "@/lib/mockData";
 import { useCartStore } from "@/lib/store";
+import { usePressHandlers } from "@/lib/usePressHandlers";
 import ProductCard from "@/components/product/ProductCard";
 import ProductImage from "@/components/product/ProductImage";
 import ShareButton from "@/components/share/ShareButton";
@@ -47,6 +48,26 @@ export default function ProductDetailPage({
       .slice(0, 4);
   }, [product]);
 
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    if (product.stock === 0) {
+      toast.error("This product is out of stock.");
+      return;
+    }
+
+    addItem(product, quantity);
+    setIsAdded(true);
+    toast.success(`${quantity} ${product.name} added to cart.`);
+    setTimeout(() => setIsAdded(false), 2000);
+  };
+  const addToCartPressHandlers = usePressHandlers<HTMLButtonElement>(
+    handleAddToCart,
+    {
+      disabled: !product || product.stock === 0,
+    },
+  );
+
   if (!product) {
     return (
       <main className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
@@ -62,18 +83,6 @@ export default function ProductDetailPage({
       </main>
     );
   }
-
-  const handleAddToCart = () => {
-    if (product.stock === 0) {
-      toast.error("This product is out of stock.");
-      return;
-    }
-
-    addItem(product, quantity);
-    setIsAdded(true);
-    toast.success(`${quantity} ${product.name} added to cart.`);
-    setTimeout(() => setIsAdded(false), 2000);
-  };
 
   return (
     <main className="min-h-screen bg-slate-950">
@@ -229,7 +238,7 @@ export default function ProductDetailPage({
 
               {/* Add to Cart Button */}
               <button
-                onClick={handleAddToCart}
+                {...addToCartPressHandlers}
                 disabled={product.stock === 0}
                 className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all duration-300 active:scale-95 ${
                   isAdded

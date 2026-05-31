@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/store";
+import { usePressHandlers } from "@/lib/usePressHandlers";
 import CartSlideout from "@/components/cart/CartSlideout";
 import { ShoppingCart, Search, User, Menu, X } from "lucide-react";
 
@@ -16,6 +17,12 @@ export default function Navbar() {
   const [isHydrated, setIsHydrated] = useState(false);
   const router = useRouter();
   const itemCount = useCartStore((state) => state.getItemCount());
+  const cartPressHandlers = usePressHandlers<HTMLButtonElement>(() =>
+    setIsCartOpen(true)
+  );
+  const mobileMenuPressHandlers = usePressHandlers<HTMLButtonElement>(() =>
+    setIsMobileMenuOpen((isOpen) => !isOpen)
+  );
 
   useEffect(() => {
     if (!useCartStore.persist) {
@@ -123,7 +130,7 @@ export default function Navbar() {
 
               {/* Cart */}
               <button
-                onClick={() => setIsCartOpen(true)}
+                {...cartPressHandlers}
                 className="relative p-2 text-slate-400 hover:text-amber-300 transition-colors duration-200"
               >
                 <ShoppingCart size={20} />
@@ -136,7 +143,7 @@ export default function Navbar() {
 
               {/* Mobile Menu Toggle */}
               <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                {...mobileMenuPressHandlers}
                 className="md:hidden p-2 text-slate-400 hover:text-amber-300 transition-colors duration-200"
               >
                 {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
