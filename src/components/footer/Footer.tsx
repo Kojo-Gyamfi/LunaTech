@@ -27,6 +27,32 @@ const supportLinks = [
   { label: "Checkout", href: "/checkout" },
 ];
 
+const getSavedSubscribers = () => {
+  try {
+    const savedSubscribers = window.localStorage.getItem(
+      "lunatech-subscribers",
+    );
+    return savedSubscribers ? (JSON.parse(savedSubscribers) as string[]) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveSubscriber = (email: string) => {
+  try {
+    const subscribers = getSavedSubscribers();
+
+    if (!subscribers.includes(email)) {
+      window.localStorage.setItem(
+        "lunatech-subscribers",
+        JSON.stringify([...subscribers, email]),
+      );
+    }
+  } catch {
+    // Keep the subscription interaction working if iOS blocks storage.
+  }
+};
+
 export default function Footer() {
   const [email, setEmail] = useState("");
 
@@ -39,16 +65,7 @@ export default function Footer() {
       return;
     }
 
-    const subscribers = JSON.parse(
-      window.localStorage.getItem("lunatech-subscribers") ?? "[]",
-    ) as string[];
-
-    if (!subscribers.includes(trimmedEmail.toLowerCase())) {
-      window.localStorage.setItem(
-        "lunatech-subscribers",
-        JSON.stringify([...subscribers, trimmedEmail.toLowerCase()]),
-      );
-    }
+    saveSubscriber(trimmedEmail.toLowerCase());
 
     toast.success("You are subscribed to LunaTech updates.");
     setEmail("");

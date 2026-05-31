@@ -51,16 +51,16 @@ export default function ShareModal({
 
       {/* Modal */}
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center px-4"
+        className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto px-4 py-6 sm:items-center sm:py-8"
         onClick={onClose}
         role="presentation"
       >
         <div
-          className="glass w-full max-w-sm rounded-2xl shadow-2xl border border-white/10 p-8 animate-in fade-in zoom-in duration-200"
+          className="glass my-auto w-full max-w-sm rounded-2xl border border-white/10 p-5 shadow-2xl animate-in fade-in zoom-in duration-200 sm:max-h-[calc(100dvh-4rem)] sm:overflow-y-auto sm:p-6"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="bg-amber-400/20 rounded-lg p-2.5">
                 <Share2 size={20} className="text-amber-300" />
@@ -83,7 +83,7 @@ export default function ShareModal({
           </div>
 
           {/* Product Preview */}
-          <div className="mb-6 p-4 rounded-lg bg-white/5 border border-white/10">
+          <div className="mb-4 rounded-lg border border-white/10 bg-white/5 p-3">
             <p className="text-sm font-semibold text-slate-200 line-clamp-2 mb-1">
               {product.name}
             </p>
@@ -93,14 +93,14 @@ export default function ShareModal({
           </div>
 
           {/* Share Buttons */}
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {/* Twitter */}
             <button
               onClick={() => handleShare("twitter")}
               disabled={isSharing}
-              className="w-full flex items-center space-x-3 p-4 rounded-lg bg-slate-900/50 border border-white/10 hover:border-sky-500/50 hover:bg-sky-500/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group pointer-events-auto"
+              className="w-full flex items-center space-x-3 rounded-lg border border-white/10 bg-slate-900/50 p-3 transition-all duration-200 hover:border-sky-500/50 hover:bg-sky-500/10 disabled:cursor-not-allowed disabled:opacity-50 group pointer-events-auto"
             >
-              <div className="flex-shrink-0 w-10 h-10 bg-sky-500/20 rounded-lg flex items-center justify-center group-hover:bg-sky-500/30">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-sky-500/20 group-hover:bg-sky-500/30">
                 <Send size={18} className="text-sky-400" />
               </div>
               <div className="text-left">
@@ -113,9 +113,9 @@ export default function ShareModal({
             <button
               onClick={() => handleShare("facebook")}
               disabled={isSharing}
-              className="w-full flex items-center space-x-3 p-4 rounded-lg bg-slate-900/50 border border-white/10 hover:border-blue-600/50 hover:bg-blue-600/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group pointer-events-auto"
+              className="w-full flex items-center space-x-3 rounded-lg border border-white/10 bg-slate-900/50 p-3 transition-all duration-200 hover:border-blue-600/50 hover:bg-blue-600/10 disabled:cursor-not-allowed disabled:opacity-50 group pointer-events-auto"
             >
-              <div className="flex-shrink-0 w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center group-hover:bg-blue-600/30">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-blue-600/20 group-hover:bg-blue-600/30">
                 <Send size={18} className="text-blue-400" />
               </div>
               <div className="text-left">
@@ -128,9 +128,9 @@ export default function ShareModal({
             <button
               onClick={() => handleShare("whatsapp")}
               disabled={isSharing}
-              className="w-full flex items-center space-x-3 p-4 rounded-lg bg-slate-900/50 border border-white/10 hover:border-green-500/50 hover:bg-green-500/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group pointer-events-auto"
+              className="w-full flex items-center space-x-3 rounded-lg border border-white/10 bg-slate-900/50 p-3 transition-all duration-200 hover:border-green-500/50 hover:bg-green-500/10 disabled:cursor-not-allowed disabled:opacity-50 group pointer-events-auto"
             >
-              <div className="flex-shrink-0 w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center group-hover:bg-green-500/30">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-green-500/20 group-hover:bg-green-500/30">
                 <MessageCircle size={18} className="text-green-400" />
               </div>
               <div className="text-left">
@@ -143,9 +143,9 @@ export default function ShareModal({
             <button
               onClick={() => handleShare("instagram")}
               disabled={isSharing}
-              className="w-full flex items-center space-x-3 p-4 rounded-lg bg-slate-900/50 border border-white/10 hover:border-pink-500/50 hover:bg-pink-500/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
+              className="w-full flex items-center space-x-3 rounded-lg border border-white/10 bg-slate-900/50 p-3 transition-all duration-200 hover:border-pink-500/50 hover:bg-pink-500/10 disabled:cursor-not-allowed disabled:opacity-50 group"
             >
-              <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 opacity-20 group-hover:opacity-30 rounded-lg flex items-center justify-center transition-opacity">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 to-purple-600 opacity-20 transition-opacity group-hover:opacity-30">
                 <Send size={18} className="text-pink-400" />
               </div>
               <div className="text-left">
@@ -162,9 +162,9 @@ export default function ShareModal({
             <button
               onClick={handleCopyLink}
               disabled={isSharing}
-              className="w-full flex items-center space-x-3 p-4 rounded-lg bg-slate-900/50 border border-white/10 hover:border-amber-400/50 hover:bg-amber-400/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
+              className="w-full flex items-center space-x-3 rounded-lg border border-white/10 bg-slate-900/50 p-3 transition-all duration-200 hover:border-amber-400/50 hover:bg-amber-400/10 disabled:cursor-not-allowed disabled:opacity-50 group"
             >
-              <div className="flex-shrink-0 w-10 h-10 bg-amber-400/20 rounded-lg flex items-center justify-center group-hover:bg-amber-400/30">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-amber-400/20 group-hover:bg-amber-400/30">
                 <Copy size={18} className="text-amber-300" />
               </div>
               <div className="text-left">
@@ -179,7 +179,7 @@ export default function ShareModal({
           </div>
 
           {/* Footer */}
-          <p className="text-xs text-slate-500 text-center mt-6">
+          <p className="mt-4 text-center text-xs text-slate-500">
             Sharing helps spread the word! 💙
           </p>
         </div>
