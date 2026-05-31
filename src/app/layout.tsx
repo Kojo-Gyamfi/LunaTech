@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/navbar/Navbar";
+import Footer from "@/components/footer/Footer";
 import ToastProvider from "@/components/ToastProvider";
 import "./globals.css";
 
@@ -40,6 +41,7 @@ export default function RootLayout({
         <ToastProvider>
           <Navbar />
           {children}
+          <Footer />
         </ToastProvider>
       </body>
     </html>
