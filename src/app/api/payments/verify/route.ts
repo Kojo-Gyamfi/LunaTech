@@ -14,6 +14,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    if (!process.env.PAYSTACK_SECRET_KEY) {
+      return NextResponse.json(
+        { success: false, message: "Paystack secret key is not configured" },
+        { status: 503 },
+      );
+    }
+
     // Verify transaction with Paystack API
     const response = await fetch(
       `${PAYSTACK_API_URL}/transaction/verify/${reference}`,

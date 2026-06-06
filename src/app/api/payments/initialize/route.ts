@@ -14,6 +14,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!process.env.PAYSTACK_SECRET_KEY) {
+      return NextResponse.json(
+        { success: false, message: "Paystack secret key is not configured" },
+        { status: 503 },
+      );
+    }
+
     // Amount in Paystack is in pesewas (100 pesewas = 1 Ghana Cedi)
     const amountInPesewas = Math.round(amount * 100);
 

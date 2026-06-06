@@ -609,7 +609,7 @@ export default function CheckoutPage() {
                             {item.product.name} x {item.quantity}
                           </span>
                           <span>
-                            $
+                            GHS{" "}
                             {(
                               item.product.price * item.quantity
                             ).toLocaleString()}
@@ -705,7 +705,8 @@ export default function CheckoutPage() {
                     <p className="text-xs">Qty: {item.quantity}</p>
                   </div>
                   <p className="text-slate-200 font-medium">
-                    ${(item.product.price * item.quantity).toLocaleString()}
+                    GHS{" "}
+                    {(item.product.price * item.quantity).toLocaleString()}
                   </p>
                 </div>
               ))}

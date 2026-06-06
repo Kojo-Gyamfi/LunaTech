@@ -30,9 +30,6 @@ export async function POST(request: Request) {
       ).toISOString(),
     };
 
-    // Log order (in production, this would be saved to a database)
-    console.log('Order received:', order);
-
     return NextResponse.json(
       {
         success: true,
