@@ -1,19 +1,119 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useCartStore } from "@/lib/store";
 import ProductImage from "@/components/product/ProductImage";
-import { CheckCircle, Clock, Package, Truck } from "lucide-react";
+import { CheckCircle, Clock, Package, Truck, AlertCircle } from "lucide-react";
 
 const fallbackOrderDate = new Date("2026-05-12T12:00:00Z");
 const fallbackDeliveryDate = new Date("2026-05-18T12:00:00Z");
 
 function OrderConfirmationContent() {
   const searchParams = useSearchParams();
+  const reference = searchParams.get("reference");
   const orderId = searchParams.get("orderId");
   const lastOrder = useCartStore((state) => state.lastOrder);
+  const clearCart = useCartStore((state) => state.clearCart);
+  const resetCheckout = useCartStore((state) => state.resetCheckout);
+
+  const [paymentVerified, setPaymentVerified] = useState<boolean | null>(() =>
+    reference ? null : true,
+  );
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null,
+  );
+
+  // Verify payment if reference is provided (from Paystack)
+  useEffect(() => {
+    if (reference) {
+      const verifyPayment = async () => {
+        try {
+          const response = await fetch(
+            `/api/payments/verify?reference=${reference}`,
+          );
+          const result = await response.json();
+
+          if (result.success && result.status === "success") {
+            setPaymentVerified(true);
+            // Clear cart after successful payment
+            clearCart();
+            resetCheckout();
+          } else {
+            setPaymentVerified(false);
+            setVerificationError(
+              result.message || "Payment verification failed",
+            );
+          }
+        } catch (error) {
+          console.error("Error verifying payment:", error);
+          setPaymentVerified(false);
+          setVerificationError(
+            "Failed to verify payment. Please contact support.",
+          );
+        }
+      };
+
+      verifyPayment();
+    } else {
+      // No reference means order was from demo mode or direct access
+      clearCart();
+      resetCheckout();
+    }
+  }, [reference, clearCart, resetCheckout]);
+
+  if (paymentVerified === false) {
+    return (
+      <main className="min-h-screen bg-slate-950">
+        <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
+          <div className="mb-10 text-center">
+            <div className="mb-4 flex justify-center">
+              <AlertCircle size={56} className="text-red-500" />
+            </div>
+            <h1 className="mb-4 text-3xl font-bold text-slate-100 sm:text-4xl">
+              Payment Verification Failed
+            </h1>
+            <p className="mb-2 text-base text-slate-400">{verificationError}</p>
+          </div>
+
+          <div className="glass mb-8 rounded-lg p-5 sm:p-8">
+            <p className="mb-4 text-slate-400">
+              Your payment could not be verified. Please try again or contact
+              our support team.
+            </p>
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <Link
+                href="/checkout"
+                className="flex-1 rounded-lg bg-amber-400 px-6 py-3 text-center font-semibold text-slate-950 transition-all duration-200 hover:bg-amber-300"
+              >
+                Return to Checkout
+              </Link>
+              <Link
+                href="/support"
+                className="flex-1 rounded-lg border border-white/10 px-6 py-3 text-center font-semibold text-slate-300 transition-all duration-200 hover:bg-slate-800/50"
+              >
+                Contact Support
+              </Link>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (paymentVerified === null) {
+    return (
+      <main className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="mb-4 flex justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400"></div>
+          </div>
+          <p className="text-slate-400">Verifying payment...</p>
+        </div>
+      </main>
+    );
+  }
   const items = lastOrder?.items ?? [];
   const subtotal = lastOrder?.subtotal ?? 0;
   const shipping = lastOrder?.shipping ?? 0;
@@ -106,7 +206,7 @@ function OrderConfirmationContent() {
                     </div>
                   </div>
                   <p className="font-semibold text-amber-300">
-                    ${(item.product.price * item.quantity).toLocaleString()}
+                    GHS {(item.product.price * item.quantity).toLocaleString()}
                   </p>
                 </div>
               ))
@@ -121,20 +221,20 @@ function OrderConfirmationContent() {
           <div className="mb-6 space-y-2 text-sm">
             <div className="flex justify-between text-slate-400">
               <span>Subtotal</span>
-              <span>${subtotal.toLocaleString()}</span>
+              <span>GHS {subtotal.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-slate-400">
               <span>Shipping</span>
-              <span>${shipping.toLocaleString()}</span>
+              <span>GHS {shipping.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-slate-400">
               <span>Tax</span>
-              <span>${tax.toLocaleString()}</span>
+              <span>GHS {tax.toLocaleString()}</span>
             </div>
             <div className="flex justify-between border-t border-white/10 pt-2 font-semibold text-slate-100">
               <span>Total</span>
               <span className="text-2xl text-amber-300">
-                ${total.toLocaleString()}
+                GHS {total.toLocaleString()}
               </span>
             </div>
           </div>

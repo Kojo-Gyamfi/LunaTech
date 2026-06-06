@@ -1,15 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useCartStore } from "@/lib/store";
 import { usePressHandlers } from "@/lib/usePressHandlers";
-import { CustomerInfo, ShippingAddress, PaymentInfo, Order } from "@/types";
+import { CustomerInfo, ShippingAddress, Order } from "@/types";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 
-type Step = 1 | 2 | 3 | 4;
+type Step = 1 | 2 | 3;
+
+declare global {
+  interface Window {
+    PaystackPop?: {
+      setup: (options: {
+        key: string;
+        email: string;
+        amount: number;
+        currency: string;
+        ref: string;
+        metadata?: Record<string, unknown>;
+        callback: (response: { reference: string; status?: string }) => void;
+        onClose: () => void;
+      }) => {
+        openIframe: () => void;
+      };
+    };
+  }
+}
 
 const createLocalOrderId = () => {
   return `LUNA-${Date.now().toString(36).toUpperCase()}-${Math.random()
@@ -22,12 +41,42 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPaystackReady, setIsPaystackReady] = useState(
+    () => typeof window !== "undefined" && Boolean(window.PaystackPop),
+  );
+
+  // Load Paystack script on mount
+  useEffect(() => {
+    const markPaystackReady = () => setIsPaystackReady(true);
+
+    if (window.PaystackPop) {
+      queueMicrotask(markPaystackReady);
+      return;
+    }
+
+    const existingScript = document.getElementById("paystack-inline-js");
+    if (existingScript) {
+      existingScript.addEventListener("load", markPaystackReady);
+      return () => {
+        existingScript.removeEventListener("load", markPaystackReady);
+      };
+    }
+
+    const script = document.createElement("script");
+    script.id = "paystack-inline-js";
+    script.src = "https://js.paystack.co/v1/inline.js";
+    script.async = true;
+    script.onload = markPaystackReady;
+    script.onerror = () => {
+      toast.error("Payment system could not load. Please refresh and try again.");
+    };
+    document.body.appendChild(script);
+  }, []);
 
   // Checkout state
   const items = useCartStore((state) => state.items);
   const setCustomerInfo = useCartStore((state) => state.setCustomerInfo);
   const setShippingAddress = useCartStore((state) => state.setShippingAddress);
-  const setPaymentInfo = useCartStore((state) => state.setPaymentInfo);
   const setLastOrder = useCartStore((state) => state.setLastOrder);
   const clearCart = useCartStore((state) => state.clearCart);
   const resetCheckout = useCartStore((state) => state.resetCheckout);
@@ -52,13 +101,6 @@ export default function CheckoutPage() {
     country: "United States",
   });
 
-  const [paymentInfo, setLocalPaymentInfo] = useState<PaymentInfo>({
-    cardNumber: "",
-    cardName: "",
-    expiryDate: "",
-    cvv: "",
-  });
-
   // Validation functions
   const validateStep1 = () => {
     return (
@@ -78,15 +120,6 @@ export default function CheckoutPage() {
     );
   };
 
-  const validateStep3 = () => {
-    return (
-      paymentInfo.cardNumber.replace(/\s/g, "").length === 16 &&
-      paymentInfo.cardName.trim() !== "" &&
-      paymentInfo.expiryDate.trim() !== "" &&
-      paymentInfo.cvv.length === 3
-    );
-  };
-
   // Step navigation
   const handleNext = () => {
     if (currentStep === 1 && !validateStep1()) {
@@ -97,15 +130,10 @@ export default function CheckoutPage() {
       toast.error("Please fill in all shipping address fields.");
       return;
     }
-    if (currentStep === 3 && !validateStep3()) {
-      toast.error("Please fill in all payment information fields correctly.");
-      return;
-    }
 
-    if (currentStep < 4) {
+    if (currentStep < 3) {
       if (currentStep === 1) setCustomerInfo(customerInfo);
       if (currentStep === 2) setShippingAddress(shippingAddress);
-      if (currentStep === 3) setPaymentInfo(paymentInfo);
 
       setCurrentStep((currentStep + 1) as Step);
     }
@@ -119,54 +147,118 @@ export default function CheckoutPage() {
 
   const handleSubmitOrder = async () => {
     setIsSubmitting(true);
-    const fallbackOrder: Order = {
-      id: createLocalOrderId(),
-      items,
-      customerInfo,
-      shippingAddress,
-      subtotal,
-      shipping,
-      tax,
-      total,
-      createdAt: new Date().toISOString(),
-      estimatedDelivery: new Date(
-        Date.now() + 6 * 24 * 60 * 60 * 1000,
-      ).toISOString(),
-    };
 
     try {
-      const response = await fetch("/api/orders", {
+      const paystackPublicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+
+      if (!paystackPublicKey) {
+        toast.error("Paystack public key is not configured.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Store checkout data in Zustand store first
+      setCustomerInfo(customerInfo);
+      setShippingAddress(shippingAddress);
+
+      // Create order data
+      const orderData: Order = {
+        id: createLocalOrderId(),
+        items,
+        customerInfo,
+        shippingAddress,
+        subtotal,
+        shipping,
+        tax,
+        total,
+        createdAt: new Date().toISOString(),
+        estimatedDelivery: new Date(
+          Date.now() + 6 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
+      };
+      setLastOrder(orderData);
+
+      // Call Paystack initialize endpoint
+      const response = await fetch("/api/payments/initialize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items,
+          email: customerInfo.email,
+          amount: total,
+          reference: orderData.id,
           customerInfo,
-          shippingAddress,
-          paymentInfo,
-          subtotal,
-          shipping,
-          tax,
-          total,
         }),
       });
 
       const result = await response.json();
-      const order = response.ok && result.order ? result.order : fallbackOrder;
-      const orderId = response.ok && result.id ? result.id : fallbackOrder.id;
 
-      setLastOrder(order);
-      clearCart();
-      resetCheckout();
-      toast.success("Order placed successfully.");
-      router.push(`/order-confirmation?orderId=${orderId}`);
+      if (!result.success) {
+        toast.error(result.message || "Failed to initialize payment");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Check if Paystack is loaded
+      if (!window.PaystackPop) {
+        toast.error("Payment popup is still loading. Please try again in a moment.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const verifyPaystackPayment = async (reference: string) => {
+        try {
+          const verifyResponse = await fetch(
+            `/api/payments/verify?reference=${reference}`,
+          );
+          const verifyResult = await verifyResponse.json();
+
+          if (!verifyResult.success || verifyResult.status !== "success") {
+            toast.error(
+              verifyResult.message || "Payment could not be verified.",
+            );
+            setIsSubmitting(false);
+            return;
+          }
+
+          toast.success("Payment successful!");
+          clearCart();
+          resetCheckout();
+          router.push(
+            `/order-confirmation?reference=${reference}&orderId=${orderData.id}&status=success`,
+          );
+        } catch (error) {
+          console.error("Error verifying payment:", error);
+          toast.error("Payment verification failed. Please contact support.");
+          setIsSubmitting(false);
+        }
+      };
+
+      // Initialize Paystack Pop modal
+      const handler = window.PaystackPop.setup({
+        key: paystackPublicKey,
+        email: customerInfo.email,
+        amount: result.amount,
+        currency: "GHS",
+        ref: result.reference,
+        metadata: {
+          orderId: orderData.id,
+          customerName: `${customerInfo.firstName} ${customerInfo.lastName}`,
+          customerPhone: customerInfo.phone,
+        },
+        onClose: () => {
+          toast.error("Payment cancelled.");
+          setIsSubmitting(false);
+        },
+        callback: function (response) {
+          const reference = response.reference || result.reference;
+          void verifyPaystackPayment(reference);
+        },
+      });
+
+      handler.openIframe();
     } catch (error) {
-      console.error("Error submitting order:", error);
-      setLastOrder(fallbackOrder);
-      clearCart();
-      resetCheckout();
-      toast.success("Order placed successfully.");
-      router.push(`/order-confirmation?orderId=${fallbackOrder.id}`);
-    } finally {
+      console.error("Error initializing payment:", error);
+      toast.error("Failed to initialize payment. Please try again.");
       setIsSubmitting(false);
     }
   };
@@ -180,7 +272,7 @@ export default function CheckoutPage() {
   const submitOrderPressHandlers = usePressHandlers<HTMLButtonElement>(
     handleSubmitOrder,
     {
-      disabled: isSubmitting,
+      disabled: isSubmitting || !isPaystackReady,
     },
   );
 
@@ -215,7 +307,7 @@ export default function CheckoutPage() {
             {/* Step Indicator */}
             <div className="mb-12">
               <div className="flex items-center justify-between mb-8">
-                {[1, 2, 3, 4].map((step) => (
+                {[1, 2, 3].map((step) => (
                   <div key={step} className="flex flex-col items-center">
                     <div
                       className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-200 ${
@@ -232,7 +324,6 @@ export default function CheckoutPage() {
                       {step === 1 && "Information"}
                       {step === 2 && "Shipping"}
                       {step === 3 && "Payment"}
-                      {step === 4 && "Review"}
                     </p>
                   </div>
                 ))}
@@ -240,7 +331,7 @@ export default function CheckoutPage() {
 
               {/* Step Line */}
               <div className="flex gap-2">
-                {[1, 2, 3].map((i) => (
+                {[1, 2].map((i) => (
                   <div
                     key={i}
                     className={`flex-1 h-1 rounded-full transition-all duration-200 ${
@@ -449,7 +540,9 @@ export default function CheckoutPage() {
                         <option value="Ghana">Ghana</option>
                         <option value="Nigeria">Nigeria</option>
                         <option value="Senegal">Senegal</option>
-                        <option value="Cote d'Ivoire">Cote d&apos;Ivoire</option>
+                        <option value="Cote d'Ivoire">
+                          Cote d&apos;Ivoire
+                        </option>
                         <option value="Kenya">Kenya</option>
                         <option value="Egypt">Egypt</option>
                         <option value="South Africa">South Africa</option>
@@ -465,170 +558,92 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* Step 3: Payment Information */}
+              {/* Step 3: Payment */}
               {currentStep === 3 && (
                 <div className="space-y-6">
                   <h2 className="text-xl sm:text-2xl font-bold text-slate-100">
-                    Payment Information
+                    Payment Method
                   </h2>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-2">
-                      Cardholder Name
-                    </label>
-                    <input
-                      type="text"
-                      value={paymentInfo.cardName}
-                      onChange={(e) =>
-                        setLocalPaymentInfo({
-                          ...paymentInfo,
-                          cardName: e.target.value,
-                        })
-                      }
-                      className="w-full px-4 py-2 bg-slate-900/50 border border-white/10 rounded-lg text-slate-100 focus:outline-none focus:border-amber-400/50 transition-colors duration-200"
-                      placeholder="John Doe"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-2">
-                      Card Number
-                    </label>
-                    <input
-                      type="text"
-                      value={paymentInfo.cardNumber}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, "");
-                        const formatted = value
-                          .replace(/(\d{4})/g, "$1 ")
-                          .trim();
-                        setLocalPaymentInfo({
-                          ...paymentInfo,
-                          cardNumber: formatted.slice(0, 19),
-                        });
-                      }}
-                      placeholder="1234 5678 9012 3456"
-                      maxLength={19}
-                      className="w-full px-4 py-2 bg-slate-900/50 border border-white/10 rounded-lg text-slate-100 focus:outline-none focus:border-amber-400/50 transition-colors duration-200 font-mono"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-300 mb-2">
-                        Expiry Date
-                      </label>
-                      <input
-                        type="text"
-                        value={paymentInfo.expiryDate}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, "");
-                          let formatted = value;
-                          if (value.length >= 2) {
-                            formatted =
-                              value.slice(0, 2) + "/" + value.slice(2, 4);
-                          }
-                          setLocalPaymentInfo({
-                            ...paymentInfo,
-                            expiryDate: formatted,
-                          });
-                        }}
-                        placeholder="MM/YY"
-                        maxLength={5}
-                        className="w-full px-4 py-2 bg-slate-900/50 border border-white/10 rounded-lg text-slate-100 focus:outline-none focus:border-amber-400/50 transition-colors duration-200"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-300 mb-2">
-                        CVV
-                      </label>
-                      <input
-                        type="text"
-                        value={paymentInfo.cvv}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, "");
-                          setLocalPaymentInfo({
-                            ...paymentInfo,
-                            cvv: value.slice(0, 3),
-                          });
-                        }}
-                        placeholder="123"
-                        maxLength={3}
-                        className="w-full px-4 py-2 bg-slate-900/50 border border-white/10 rounded-lg text-slate-100 focus:outline-none focus:border-amber-400/50 transition-colors duration-200"
-                      />
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-slate-500">
-                    This is a demo. No real payment will be processed.
-                  </p>
-                </div>
-              )}
-
-              {/* Step 4: Review */}
-              {currentStep === 4 && (
-                <div className="space-y-6">
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-100">
-                    Review Your Order
-                  </h2>
-
-                  <div className="space-y-4">
-                    <div className="border-t border-white/10 pt-4">
-                      <h3 className="font-semibold text-slate-100 mb-3">
-                        Customer Information
-                      </h3>
-                      <p className="text-sm text-slate-400">
-                        {customerInfo.firstName} {customerInfo.lastName}
-                      </p>
-                      <p className="text-sm text-slate-400">
-                        {customerInfo.email}
-                      </p>
-                      <p className="text-sm text-slate-400">
-                        {customerInfo.phone}
-                      </p>
-                    </div>
-
-                    <div className="border-t border-white/10 pt-4">
-                      <h3 className="font-semibold text-slate-100 mb-3">
-                        Shipping Address
-                      </h3>
-                      <p className="text-sm text-slate-400">
-                        {shippingAddress.street}
-                      </p>
-                      <p className="text-sm text-slate-400">
-                        {shippingAddress.city}, {shippingAddress.state}{" "}
-                        {shippingAddress.zip}
-                      </p>
-                      <p className="text-sm text-slate-400">
-                        {shippingAddress.country}
-                      </p>
-                    </div>
-
-                    <div className="border-t border-white/10 pt-4">
-                      <h3 className="font-semibold text-slate-100 mb-3">
-                        Order Items
-                      </h3>
-                      <div className="space-y-2">
-                        {items.map((item) => (
-                          <div
-                            key={item.product.id}
-                            className="flex justify-between text-sm text-slate-400"
-                          >
-                            <span>
-                              {item.product.name} x {item.quantity}
-                            </span>
-                            <span>
-                              $
-                              {(
-                                item.product.price * item.quantity
-                              ).toLocaleString()}
-                            </span>
-                          </div>
-                        ))}
+                  {/* Payment Method Selection */}
+                  <div className="border border-amber-400/30 rounded-lg p-4 bg-amber-400/5">
+                    <div className="flex items-start space-x-3">
+                      <div className="mt-1">
+                        <input
+                          type="radio"
+                          id="paystack"
+                          name="payment-method"
+                          defaultChecked
+                          disabled
+                          className="w-4 h-4 cursor-not-allowed"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label
+                          htmlFor="paystack"
+                          className="block text-sm font-semibold text-slate-100 cursor-not-allowed"
+                        >
+                          Paystack Payment
+                        </label>
+                        <p className="text-xs text-slate-400 mt-1">
+                          Secure payment processing powered by Paystack. A
+                          payment popup will open on this checkout page.
+                        </p>
                       </div>
                     </div>
                   </div>
+
+                  {/* Order Review */}
+                  <div className="space-y-4 border-t border-white/10 pt-6">
+                    <h3 className="font-semibold text-slate-100">
+                      Order Review
+                    </h3>
+
+                    <div className="space-y-3">
+                      {items.map((item) => (
+                        <div
+                          key={item.product.id}
+                          className="flex justify-between text-sm text-slate-400"
+                        >
+                          <span>
+                            {item.product.name} x {item.quantity}
+                          </span>
+                          <span>
+                            $
+                            {(
+                              item.product.price * item.quantity
+                            ).toLocaleString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="border-t border-white/10 pt-3 space-y-2">
+                      <div className="flex justify-between text-sm text-slate-400">
+                        <span>Subtotal</span>
+                        <span>GHS {subtotal.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-sm text-slate-400">
+                        <span>Shipping</span>
+                        <span>GHS {shipping.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-sm text-slate-400">
+                        <span>Tax</span>
+                        <span>GHS {tax.toLocaleString()}</span>
+                      </div>
+                      <div className="border-t border-white/10 pt-2 flex justify-between font-semibold text-slate-100">
+                        <span>Total</span>
+                        <span className="text-amber-300">
+                          GHS {total.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-slate-500 p-3 bg-slate-900/50 rounded border border-white/5">
+                    Your payment information is secure. Paystack will collect
+                    your details in an inline popup without leaving checkout.
+                  </p>
                 </div>
               )}
 
@@ -643,7 +658,7 @@ export default function CheckoutPage() {
                   <span>Previous</span>
                 </button>
 
-                {currentStep < 4 ? (
+                {currentStep < 3 ? (
                   <button
                     {...nextPressHandlers}
                     className="flex-1 py-3 bg-amber-400 text-slate-950 font-semibold rounded-lg hover:bg-amber-300 transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
@@ -654,12 +669,16 @@ export default function CheckoutPage() {
                 ) : (
                   <button
                     {...submitOrderPressHandlers}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !isPaystackReady}
                     className="flex-1 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
                   >
                     <Check size={18} />
                     <span>
-                      {isSubmitting ? "Placing Order..." : "Place Order"}
+                      {isSubmitting
+                        ? "Processing..."
+                        : isPaystackReady
+                          ? "Pay with Paystack"
+                          : "Loading Paystack..."}
                     </span>
                   </button>
                 )}
@@ -695,20 +714,20 @@ export default function CheckoutPage() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-slate-400">
                 <span>Subtotal</span>
-                <span>${subtotal.toLocaleString()}</span>
+                <span>GHS {subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Shipping</span>
-                <span>${shipping.toLocaleString()}</span>
+                <span>GHS {shipping.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Tax</span>
-                <span>${tax.toLocaleString()}</span>
+                <span>GHS {tax.toLocaleString()}</span>
               </div>
               <div className="border-t border-white/10 pt-2 flex justify-between font-semibold text-slate-100">
                 <span>Total</span>
                 <span className="text-amber-300">
-                  ${total.toLocaleString()}
+                  GHS {total.toLocaleString()}
                 </span>
               </div>
             </div>

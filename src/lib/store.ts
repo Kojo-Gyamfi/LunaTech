@@ -1,8 +1,15 @@
-'use client';
+"use client";
 
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import { CartItem, Product, CustomerInfo, ShippingAddress, PaymentInfo, Order } from '@/types';
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import {
+  CartItem,
+  Product,
+  CustomerInfo,
+  ShippingAddress,
+  PaymentInfo,
+  Order,
+} from "@/types";
 
 export interface CheckoutState {
   customerInfo: CustomerInfo | null;
@@ -36,15 +43,17 @@ export interface CartStore {
   getItemCount: () => number;
 }
 
-const SHIPPING_COST = 50;
-const TAX_RATE = 0.08;
+const SHIPPING_COST = 50; // GHS
+const TAX_RATE = 0.08; // 8% VAT
 
 const memoryStorage = new Map<string, string>();
 
 const safeStorage = {
   getItem: (name: string) => {
     try {
-      return window.localStorage.getItem(name) ?? memoryStorage.get(name) ?? null;
+      return (
+        window.localStorage.getItem(name) ?? memoryStorage.get(name) ?? null
+      );
     } catch {
       return memoryStorage.get(name) ?? null;
     }
@@ -83,7 +92,7 @@ export const useCartStore = create<CartStore>()(
       addItem: (product: Product, quantity: number) => {
         set((state) => {
           const existingItem = state.items.find(
-            (item) => item.product.id === product.id
+            (item) => item.product.id === product.id,
           );
 
           if (existingItem) {
@@ -91,7 +100,7 @@ export const useCartStore = create<CartStore>()(
               items: state.items.map((item) =>
                 item.product.id === product.id
                   ? { ...item, quantity: item.quantity + quantity }
-                  : item
+                  : item,
               ),
             };
           }
@@ -116,9 +125,7 @@ export const useCartStore = create<CartStore>()(
 
         set((state) => ({
           items: state.items.map((item) =>
-            item.product.id === productId
-              ? { ...item, quantity }
-              : item
+            item.product.id === productId ? { ...item, quantity } : item,
           ),
         }));
       },
@@ -162,7 +169,7 @@ export const useCartStore = create<CartStore>()(
       getSubtotal: () => {
         return get().items.reduce(
           (total, item) => total + item.product.price * item.quantity,
-          0
+          0,
         );
       },
 
@@ -175,9 +182,7 @@ export const useCartStore = create<CartStore>()(
       },
 
       getCartTotal: () => {
-        return (
-          get().getSubtotal() + get().getShipping() + get().getTax()
-        );
+        return get().getSubtotal() + get().getShipping() + get().getTax();
       },
 
       getItemCount: () => {
@@ -185,8 +190,8 @@ export const useCartStore = create<CartStore>()(
       },
     }),
     {
-      name: 'luna-tech-cart',
+      name: "luna-tech-cart",
       storage: createJSONStorage(() => safeStorage),
-    }
-  )
+    },
+  ),
 );
