@@ -1,54 +1,39 @@
-# LUNATECH — Premium Electronics E-Commerce
+# LunaTech E-Commerce
 
-A modern e-commerce app built with Next.js 14, TypeScript, and Tailwind CSS. Features product filtering, shopping cart, multi-step checkout, authentication, and dark mode.
+LunaTech is a modern premium electronics storefront built with Next.js, TypeScript, Tailwind CSS, and Zustand. It includes product browsing, a persistent cart, a multi-step checkout flow, Paystack inline payments, and a support contact form powered by email.
 
 ## Features
 
-- Advanced product filtering & search with URL state sync
-- Product details with image gallery & variant selectors
-- Persistent shopping cart with real-time calculations
-- Multi-step checkout with form validation (React Hook Form + Zod)
-- User authentication (NextAuth.js)
-- Wishlist with localStorage
-- Dark mode support
-- Mobile responsive
-- Lighthouse score 90+
+- Responsive product catalog and product detail pages
+- Persistent shopping cart with subtotal, shipping, tax, and total calculations
+- Multi-step checkout for customer info, shipping, and payment
+- Paystack Pop inline payment modal with server-side transaction verification
+- Order confirmation page with payment status handling
+- Support form using Nodemailer/SMTP
+- Dark, polished UI with Tailwind CSS and Lucide icons
 
 ## Tech Stack
 
-- **Next.js 14** (App Router)
-- **TypeScript**
-- **Tailwind CSS** + shadcn/ui
-- **Zustand** (state management)
-- **React Hook Form** + **Zod** (form validation)
-- **NextAuth.js** (authentication)
-- **React Query** (data fetching)
+- Next.js 16 App Router
+- React 19
+- TypeScript
+- Tailwind CSS
+- Zustand
+- Paystack
+- Nodemailer
+- Sonner toasts
+- Lucide React icons
 
-## Quick Start
 
-```bash
-git clone https://github.com/yourusername/lumen-ecommerce.git
-cd lumen-ecommerce
-npm install
-npm run dev
-```
-
-## Project Structure
-
-```
-src/
-├── app/          # Next.js App Router
-├── components/   # React components
-├── lib/          # Utilities & helpers
-├── store/        # Zustand state
-├── hooks/        # Custom hooks
-└── types/        # TypeScript types
-```
-
-## Development
+## Scripts
 
 ```bash
-npm run dev       # Start dev server
-npm run build     # Build for production
-npm run lint      # Run ESLint
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run start    # Start production server
+npm run lint     # Run ESLint
 ```
+
+## Deployment
+
+The app is ready to deploy on Vercel. Before using live payments, rotate any exposed local secrets, add production environment variables, and configure Paystack live keys and webhooks.
