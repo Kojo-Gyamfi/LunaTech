@@ -650,6 +650,7 @@ export default function CheckoutPage() {
               {/* Navigation Buttons */}
               <div className="flex gap-4 mt-8 pt-6 border-t border-white/10">
                 <button
+                  type="button"
                   {...previousPressHandlers}
                   disabled={currentStep === 1}
                   className="flex-1 py-3 border border-white/10 text-slate-300 font-semibold rounded-lg hover:bg-slate-800/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
@@ -660,6 +661,7 @@ export default function CheckoutPage() {
 
                 {currentStep < 3 ? (
                   <button
+                    type="button"
                     {...nextPressHandlers}
                     className="flex-1 py-3 bg-amber-400 text-slate-950 font-semibold rounded-lg hover:bg-amber-300 transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
                   >
@@ -668,6 +670,7 @@ export default function CheckoutPage() {
                   </button>
                 ) : (
                   <button
+                    type="button"
                     {...submitOrderPressHandlers}
                     disabled={isSubmitting || !isPaystackReady}
                     className="flex-1 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
